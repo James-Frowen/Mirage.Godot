@@ -46,7 +46,7 @@ namespace Mirage.CodeGen
 
         protected abstract ResultType Process(AssemblyDefinition assembly, ICompiledAssembly compiledAssembly);
 
-        public Result Process(ICompiledAssembly compiledAssembly)
+        public Result Process(ICompiledAssembly compiledAssembly, string[] hintDirectories)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Mirage.CodeGen
 
                 using (timer.Sample("AssemblyDefinitionFor"))
                 {
-                    _assemblyDefinition = ReadAssembly(compiledAssembly);
+                    _assemblyDefinition = ReadAssembly(compiledAssembly, hintDirectories);
                 }
 
                 var result = Process(_assemblyDefinition, compiledAssembly);
@@ -155,9 +155,9 @@ namespace Mirage.CodeGen
             return new ILPostProcessResult(null, new List<DiagnosticMessage> { message });
         }
 
-        private static AssemblyDefinition ReadAssembly(ICompiledAssembly compiledAssembly)
+        private static AssemblyDefinition ReadAssembly(ICompiledAssembly compiledAssembly, string[] hintDirectories)
         {
-            var assemblyResolver = new PostProcessorAssemblyResolver(compiledAssembly);
+            var assemblyResolver = new PostProcessorAssemblyResolver(compiledAssembly, hintDirectories);
             var readerParameters = new ReaderParameters
             {
                 SymbolStream = new MemoryStream(compiledAssembly.InMemoryAssembly.PdbData),

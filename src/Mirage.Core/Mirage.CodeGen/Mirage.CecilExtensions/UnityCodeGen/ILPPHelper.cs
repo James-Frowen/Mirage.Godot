@@ -34,7 +34,7 @@ namespace Mirage.CodeGen
 
             var weaver = createWeaver.Invoke(compiledAssembly);
 
-            var result = weaver.Process(compiledAssembly);
+            var result = weaver.Process(compiledAssembly, null);
             Console.WriteLine($"[MirageILPostProcessor] {result.Type} {compiledAssembly.Name}");
 
             return result.ILPostProcessResult;

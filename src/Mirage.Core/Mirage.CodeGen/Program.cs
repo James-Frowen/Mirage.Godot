@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +28,16 @@ namespace Mirage.Weaver
                     Environment.Exit(1);
                 }
 
+
                 var dllPath = args[0];
+                Console.WriteLine($"Weaver target: {dllPath}");
+                var hints = new List<string>();
+                hints.Add(Path.GetDirectoryName(dllPath));
+                for (var i = 1; i < args.Length; i++)
+                {
+                    hints.Add(args[i]);
+                }
+
                 var data = File.ReadAllBytes(dllPath);
                 var asm = Assembly.Load(data);
 
@@ -36,7 +46,7 @@ namespace Mirage.Weaver
                 var compiledAssembly = new CompiledAssembly(dllPath, references, new string[0]);
                 var weaverLogger = new WeaverLogger(false);
                 var weaver = new Weaver(weaverLogger);
-                var result = weaver.Process(compiledAssembly);
+                var result = weaver.Process(compiledAssembly, hints.ToArray());
 
                 Write(result, dllPath, compiledAssembly.PdbPath);
 

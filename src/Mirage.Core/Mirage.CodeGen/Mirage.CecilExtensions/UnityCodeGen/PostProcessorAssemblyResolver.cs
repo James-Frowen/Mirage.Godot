@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using Mono.Cecil;
 using Unity.CompilationPipeline.Common.ILPostProcessing;
@@ -12,18 +11,38 @@ namespace Mirage.CodeGen
     // https://github.com/Unity-Technologies/com.unity.netcode.gameobjects/blob/472d51b34520e8fb6f0aa43fd56d162c3029e0b0/com.unity.netcode.gameobjects/Editor/CodeGen/PostProcessorAssemblyResolver.cs
     internal sealed class PostProcessorAssemblyResolver : IAssemblyResolver
     {
-        private readonly string[] _assemblyReferences;
-        private readonly string[] _assemblyReferencesFileName;
         private readonly Dictionary<string, AssemblyDefinition> _assemblyCache = new Dictionary<string, AssemblyDefinition>();
         private readonly ICompiledAssembly _compiledAssembly;
         private AssemblyDefinition _selfAssembly;
+        private readonly FoundAssembly[] _foundAssemblies;
+        private readonly string[] _hintDirectories;
 
-        public PostProcessorAssemblyResolver(ICompiledAssembly compiledAssembly)
+        private class FoundAssembly
+        {
+            public string FileName;
+            public string ReferenceHint;
+
+            /// <summary>
+            /// file that exists
+            /// </summary>
+            public string FoundPath;
+        }
+
+        public PostProcessorAssemblyResolver(ICompiledAssembly compiledAssembly, string[] hintDirectories)
         {
             _compiledAssembly = compiledAssembly;
-            _assemblyReferences = compiledAssembly.References;
-            // cache paths here so we dont need to call it each time we resolve
-            _assemblyReferencesFileName = _assemblyReferences.Select(r => Path.GetFileName(r)).ToArray();
+            _hintDirectories = hintDirectories;
+            _foundAssemblies = new FoundAssembly[compiledAssembly.References.Length];
+
+            for (var i = 0; i < _foundAssemblies.Length; i++)
+            {
+                var refHint = compiledAssembly.References[i];
+                _foundAssemblies[i] = new FoundAssembly
+                {
+                    ReferenceHint = refHint,
+                    FileName = Path.GetFileName(refHint),
+                };
+            }
         }
 
         public void Dispose()
@@ -45,8 +64,7 @@ namespace Mirage.CodeGen
             if (name.Name == _compiledAssembly.Name)
                 return _selfAssembly;
 
-            var fileName = FindFile(name);
-            if (fileName == null)
+            if (!TryFindFile(name.Name, out var fileName))
                 return null;
 
             var lastWriteTime = File.GetLastWriteTime(fileName);
@@ -72,39 +90,50 @@ namespace Mirage.CodeGen
             return assemblyDefinition;
         }
 
-        private string FindFile(AssemblyNameReference name)
+        private bool TryFindFile(string name, out string fileName)
         {
+            var dllName = name + ".dll";
+            var exeName = name + ".exe";
+
             // This method is called a lot, avoid linq
-
-            // first pass, check if we can find dll or exe file
-            var dllName = name.Name + ".dll";
-            var exeName = name.Name + ".exe";
-            for (var i = 0; i < _assemblyReferencesFileName.Length; i++)
+            foreach (var assembly in _foundAssemblies)
             {
-                // if filename matches, return full path
-                var fileName = _assemblyReferencesFileName[i];
-                if (fileName == dllName || fileName == exeName)
-                    return _assemblyReferences[i];
+                if (assembly.FileName == name || assembly.FileName == dllName || assembly.FileName == exeName)
+                {
+                    if (assembly.FoundPath == null)
+                    {
+                        var hint = assembly.ReferenceHint;
+                        if (hint.EndsWith(".dll") || hint.EndsWith(".exe"))
+                        {
+                            assembly.FoundPath = hint;
+                        }
+
+                        var hintDll = hint + ".dll";
+                        if (File.Exists(hintDll))
+                        {
+                            assembly.FoundPath = hintDll;
+                        }
+
+                        if (_hintDirectories != null)
+                        {
+                            foreach (var dir in _hintDirectories)
+                            {
+                                var guess = Path.Combine(dir, assembly.FileName + ".dll");
+                                if (File.Exists(guess))
+                                {
+                                    assembly.FoundPath = guess;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    fileName = assembly.FoundPath;
+                    return fileName != null;
+                }
             }
-
-            // second pass (only run if first fails), 
-
-            //Unfortunately the current ICompiledAssembly API only provides direct references.
-            //It is very much possible that a postprocessor ends up investigating a type in a directly
-            //referenced assembly, that contains a field that is not in a directly referenced assembly.
-            //if we don't do anything special for that situation, it will fail to resolve.  We should fix this
-            //in the ILPostProcessing API. As a workaround, we rely on the fact here that the indirect references
-            //are always located next to direct references, so we search in all directories of direct references we
-            //got passed, and if we find the file in there, we resolve to it.
-            var allParentDirectories = _assemblyReferences.Select(Path.GetDirectoryName).Distinct();
-            foreach (var parentDir in allParentDirectories)
-            {
-                var candidate = Path.Combine(parentDir, name.Name + ".dll");
-                if (File.Exists(candidate))
-                    return candidate;
-            }
-
-            return null;
+            fileName = null;
+            return false;
         }
 
         private static MemoryStream MemoryStreamFor(string fileName)
