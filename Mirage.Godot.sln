@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4F783CF4-F82F-4F89-B68B-3D9E7739DA53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.godot", "src\Mirage.Godot\Mirage.godot.csproj", "{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mirage.Core", "Mirage.Core", "{F19A2AF3-B77E-4468-8E41-C86048842A4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.SocketLayer", "src\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj", "{90FF9AED-4D82-4EC3-B28C-A0A4CC189813}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.Logging", "src\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj", "{9F130514-AD29-4A97-A594-225730DC9E5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.Core", "src\Mirage.Core\Mirage.Core\Mirage.Core.csproj", "{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.CodeGen", "src\Mirage.Core\Mirage.CodeGen\Mirage.CodeGen.csproj", "{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{90FF9AED-4D82-4EC3-B28C-A0A4CC189813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90FF9AED-4D82-4EC3-B28C-A0A4CC189813}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90FF9AED-4D82-4EC3-B28C-A0A4CC189813}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90FF9AED-4D82-4EC3-B28C-A0A4CC189813}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F130514-AD29-4A97-A594-225730DC9E5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F130514-AD29-4A97-A594-225730DC9E5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F130514-AD29-4A97-A594-225730DC9E5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F130514-AD29-4A97-A594-225730DC9E5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8} = {4F783CF4-F82F-4F89-B68B-3D9E7739DA53}
+		{F19A2AF3-B77E-4468-8E41-C86048842A4D} = {4F783CF4-F82F-4F89-B68B-3D9E7739DA53}
+		{90FF9AED-4D82-4EC3-B28C-A0A4CC189813} = {F19A2AF3-B77E-4468-8E41-C86048842A4D}
+		{9F130514-AD29-4A97-A594-225730DC9E5E} = {F19A2AF3-B77E-4468-8E41-C86048842A4D}
+		{B7D7B305-C2CA-4F85-81DC-78C39C0BFA98} = {F19A2AF3-B77E-4468-8E41-C86048842A4D}
+		{CD8D17D5-5F1E-4D2F-933A-E0D070632B5F} = {F19A2AF3-B77E-4468-8E41-C86048842A4D}
+	EndGlobalSection
+EndGlobal

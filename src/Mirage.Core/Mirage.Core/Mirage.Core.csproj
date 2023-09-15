@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mirage.Logging\Mirage.Logging.csproj" />
+    <ProjectReference Include="..\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
+  </ItemGroup>
+
+</Project>
