@@ -1,8 +1,8 @@
+using System;
 using Mirage.Events;
 using Mirage.Logging;
 using Mirage.Serialization;
 using Mirage.SocketLayer;
-using System;
 
 namespace Mirage
 {
@@ -29,7 +29,6 @@ namespace Mirage
 
         public MiragePeer()
         {
-            GeneratedCode.Init();
             Setup();
         }
         public void Setup(bool disconnectOnException = true, bool rethrowException = false, Config peerConfig = null, MetricSettings metric = null)

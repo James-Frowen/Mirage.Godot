@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://nea4bwm2wwpj"]
+
+[ext_resource type="Script" path="res://Scripts/Networking/NetworkNode.cs" id="1_8j5ta"]
+
+[node name="Character" type="CharacterBody3D"]
+
+[node name="Node" type="Node" parent="." node_paths=PackedStringArray("Root")]
+script = ExtResource("1_8j5ta")
+Root = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]

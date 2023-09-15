@@ -1,4 +1,5 @@
 using Godot;
+using Mirage;
 using Mirage.Logging;
 using Mirage.SocketLayer;
 
@@ -8,9 +9,10 @@ namespace MirageGodot
     {
         [Export] public SocketFactory SocketFactory;
         [Export] public bool EnableAllLogs;
+        [Export] public PackedScene[] Prefabs;
 
-        // todo do we really want singleton?
-        public static NetworkManager i;
+        [ExportGroup("Settings")]
+        [Export] public bool DisconnectOnException;
 
         public NetworkServer Server { get; private set; }
         public NetworkClient Client { get; private set; }
@@ -19,16 +21,27 @@ namespace MirageGodot
         public NetworkManager()
         {
             LogFactory.ReplaceLogHandler(new GodotLogger(), true);
+            GeneratedCode.Init();
+            Server = new NetworkServer();
+            Client = new NetworkClient(this);
         }
 
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
-            i = this;
             if (EnableAllLogs)
             {
                 LogFactory.SetDefaultLogLevel(LogType.Log, true);
                 LogFactory.GetLogger<Peer>().filterLogType = LogType.Warning;
+            }
+
+            Server.Setup(disconnectOnException: DisconnectOnException);
+            Client.Setup(disconnectOnException: DisconnectOnException);
+            //Client.RegisterPrefab(Prefabs);
+
+            foreach (var prefab in Prefabs)
+            {
+                //prefab.Prepare();
             }
         }
 

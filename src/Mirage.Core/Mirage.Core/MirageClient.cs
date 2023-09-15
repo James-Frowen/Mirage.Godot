@@ -51,8 +51,15 @@ namespace Mirage
 
             MessageHandler.RegisterHandler<NetworkPongMessage>(Time.OnClientPong);
 
+            OnStarted();
             _started.Invoke();
         }
+
+        /// <summary>
+        /// start callback that is called before the public _startedEvent
+        /// </summary>
+        protected virtual void OnStarted() { }
+
         protected override void AddPeerEvents()
         {
             Peer.OnConnected += Peer_OnConnected;
