@@ -17,4 +17,4 @@ config/icon="res://icon.svg"
 [dotnet]
 
 project/assembly_name="Mirage.godot"
-project/solution_directory="../../Mirage.godot.sln"
+project/solution_directory="../../"

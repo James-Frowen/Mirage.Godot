@@ -1,13 +1,13 @@
-using Mirage.Logging;
-using Mirage.Serialization;
-using Mirage.SocketLayer;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Mirage.Logging;
+using Mirage.Serialization;
+using Mirage.SocketLayer;
 
 namespace Mirage
 {
-    public sealed class MirageServer : MiragePeer
+    public class MirageServer : MiragePeer
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(MirageServer));
 
@@ -18,6 +18,13 @@ namespace Mirage
 
         private readonly Dictionary<IConnection, INetworkPlayer> _connections = new Dictionary<IConnection, INetworkPlayer>();
 
+        public void StartServer(ISocketFactory socketFactory)
+        {
+            var socket = socketFactory.CreateServerSocket();
+            var endpoint = socketFactory.GetBindEndPoint();
+            var maxSize = socketFactory.MaxPacketSize;
+            StartServer(socket, maxSize, endpoint);
+        }
         public void StartServer(ISocket socket, int maxPacketSize, IEndPoint endPoint)
         {
             if (logger.LogEnabled()) logger.Log($"NetworkServer created, Mirage version: {Version.Current}");

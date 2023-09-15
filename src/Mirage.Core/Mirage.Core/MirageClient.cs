@@ -1,7 +1,7 @@
+using System;
 using Mirage.Events;
 using Mirage.Logging;
 using Mirage.SocketLayer;
-using System;
 
 namespace Mirage
 {
@@ -12,7 +12,7 @@ namespace Mirage
         Connected,
     }
 
-    public sealed class MirageClient : MiragePeer
+    public class MirageClient : MiragePeer
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(MirageClient));
 
@@ -24,11 +24,14 @@ namespace Mirage
 
         public bool IsConnected { get; private set; }
 
-        /// <summary>
-        /// Connect client to a NetworkServer instance.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="port"></param>
+        public void Connect(ISocketFactory socketFactory)
+        {
+            var socket = socketFactory.CreateClientSocket();
+            var endpoint = socketFactory.GetConnectEndPoint();
+            var maxSize = socketFactory.MaxPacketSize;
+            Connect(socket, maxSize, endpoint);
+        }
+
         public void Connect(ISocket socket, int maxPacketSize, IEndPoint endPoint)
         {
             if (logger.LogEnabled()) logger.Log($"Client connecting to endpoint: {endPoint}");

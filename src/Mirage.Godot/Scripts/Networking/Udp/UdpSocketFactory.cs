@@ -1,25 +1,30 @@
-using Mirage.SocketLayer;
 using System.Net;
 using System.Net.Sockets;
+using Godot;
+using Mirage.SocketLayer;
 
-namespace Mirage.Sockets.Udp
+namespace MirageGodot.Udp
 {
-
-    public partial class UdpSocketFactory : Node, ISocketFactory
+    public partial class UdpSocketFactory : SocketFactory
     {
-        public int MaxPacketSize => UdpMTU.MaxPacketSize;
+        [Export] public int Port;
+        [Export] public string Address;
 
-        public ISocket CreateClientSocket() => new UdpSocket();
-        public ISocket CreateServerSocket() => new UdpSocket();
-        public IEndPoint GetBindEndPoint(int port)
+        public override int MaxPacketSize => UdpMTU.MaxPacketSize;
+
+        public override ISocket CreateClientSocket() => new UdpSocket();
+
+        public override ISocket CreateServerSocket() => new UdpSocket();
+
+        public override IEndPoint GetBindEndPoint()
         {
-            return new EndPointWrapper(new IPEndPoint(IPAddress.IPv6Any, port));
+            return new EndPointWrapper(new IPEndPoint(IPAddress.IPv6Any, Port));
         }
 
-        public IEndPoint GetConnectEndPoint(string address, ushort port)
+        public override IEndPoint GetConnectEndPoint(string address = null, ushort? port = null)
         {
-            var ipAddress = getAddress(address);
-            var portIn = port;
+            var ipAddress = getAddress(address ?? Address);
+            var portIn = port ?? Port;
             return new EndPointWrapper(new IPEndPoint(ipAddress, portIn));
         }
 

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using Mirage.SocketLayer;
 
-namespace Mirage.Sockets.Udp
+namespace MirageGodot.Udp
 {
     public class UdpSocket : ISocket
     {
