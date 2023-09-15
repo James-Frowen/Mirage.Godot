@@ -7,8 +7,8 @@ namespace MirageGodot.Udp
 {
     public partial class UdpSocketFactory : SocketFactory
     {
-        [Export] public int Port;
-        [Export] public string Address;
+        [Export] public int Port = 7777;
+        [Export] public string Address = "127.0.0.1";
 
         public override int MaxPacketSize => UdpMTU.MaxPacketSize;
 

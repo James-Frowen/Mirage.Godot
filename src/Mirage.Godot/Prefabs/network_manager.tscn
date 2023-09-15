@@ -10,8 +10,10 @@ SocketFactory = NodePath("UdpSocketFactory")
 EnableAllLogs = true
 Prefabs = Array[Node]([null])
 
-[node name="Hud" type="Node" parent="."]
+[node name="Hud" type="Node" parent="." node_paths=PackedStringArray("_manager", "_socketFactory")]
 script = ExtResource("2_62adp")
+_manager = NodePath("..")
+_socketFactory = NodePath("../UdpSocketFactory")
 
 [node name="UdpSocketFactory" type="Node" parent="."]
 script = ExtResource("3_wl2ot")
