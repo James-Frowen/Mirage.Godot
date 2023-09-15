@@ -37,12 +37,13 @@ namespace MirageGodot
 
             Server.Setup(disconnectOnException: DisconnectOnException);
             Client.Setup(disconnectOnException: DisconnectOnException);
-            //Client.RegisterPrefab(Prefabs);
 
-            foreach (var prefab in Prefabs)
-            {
-                //prefab.Prepare();
-            }
+            // todo find way to have list of prefabs, and then get NetworkNode in that prefab
+            //foreach (var prefab in Prefabs)
+            //{
+            //    prefab.Prepare(true);
+            //}
+            //Client.RegisterPrefabs(Prefabs, false);
         }
 
         public void StartServer()

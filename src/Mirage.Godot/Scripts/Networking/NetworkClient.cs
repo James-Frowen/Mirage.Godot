@@ -26,21 +26,47 @@ namespace MirageGodot
             MessageHandler.RegisterHandler<SpawnMessage>(OnSpawnMessage);
         }
 
-        public void RegisterPrefab(NetworkNode[] nodes)
+        // todo do we want this clean function? might not work well with multiple scenes, maybe NetwokrScene should remove its own objects instead
+        //      support just 1 scene to start with tho to be
+        public void ClearSceneObjectsFromHandler()
         {
-            foreach (var node in nodes)
+            using (var wrapper = AutoPool<List<int>>.Take())
             {
-                RegisterPrefab(node);
+                var list = wrapper.Item;
+                list.Clear();
+                foreach (var key in _handlers.Keys)
+                {
+                    // remove positive numbers because they are scene objects
+                    if (key > 0)
+                        list.Add(key);
+                }
+
+                foreach (var key in list)
+                {
+                    _handlers.Remove(key);
+                }
             }
         }
 
-        private void RegisterPrefab(NetworkNode prefab)
+        public void RegisterPrefabs(NetworkNode[] nodes, bool allowReplace)
+        {
+            foreach (var node in nodes)
+            {
+                RegisterPrefab(node, allowReplace);
+            }
+        }
+
+        private void RegisterPrefab(NetworkNode prefab, bool allowReplace)
         {
             var spawnHash = prefab.SpawnHash;
             ThrowIfZeroHash(spawnHash);
 
             if (logger.LogEnabled()) logger.Log($"Registering prefab '{prefab.Name}' as asset:{spawnHash:X}");
-            _handlers[spawnHash] = new SpawnHandler(prefab);
+            var handler = new SpawnHandler(prefab);
+            if (allowReplace)
+                _handlers[spawnHash] = handler;
+            else
+                _handlers.Add(spawnHash, handler);
         }
         private static void ThrowIfZeroHash(int prefabHash)
         {

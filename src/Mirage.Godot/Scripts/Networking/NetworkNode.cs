@@ -29,23 +29,30 @@ namespace MirageGodot
         public bool HasAuthority { get; internal set; }
 
         public NetworkNodeEvents Events { get; internal set; }
+        public NetworkServer Server { get; private set; }
+        public NetworkClient Client { get; private set; }
 
-
-        internal void Prepare()
+        internal void Prepare(bool prefab)
         {
-            if (Root == null)
-                Root = this;
+            Root ??= this;
 
-            SpawnHash = Root.Name.GetHashCode();
+            // prefabs are negative
+            // scene objects are positive
+            SpawnHash = Math.Abs(Root.Name.GetHashCode());
+            if (prefab)
+                SpawnHash *= -1;
+
             GD.Print($"Settings SpawnHash to {SpawnHash} for {Root.Name}");
         }
         internal void ServerSpawn(NetworkServer server)
         {
-
+            Server = server;
+            throw new NotImplementedException();
         }
         internal void ClientSpawn(NetworkClient client, SpawnMessage spawnMessage)
         {
-
+            Client = client;
+            throw new NotImplementedException();
         }
 
         internal void OnDeserializeAll(PooledNetworkReader payloadReader, bool v)
