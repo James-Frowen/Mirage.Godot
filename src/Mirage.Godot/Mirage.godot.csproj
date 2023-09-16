@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <!-- <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" /> -->
+    <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" />
     <Exec Command="$(ProjectDir)../Mirage.Core/Mirage.CodeGen/bin/Release/net6.0/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir)" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
