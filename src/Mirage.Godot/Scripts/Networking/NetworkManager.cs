@@ -9,7 +9,7 @@ namespace MirageGodot
     {
         [Export] public SocketFactory SocketFactory;
         [Export] public bool EnableAllLogs;
-        [Export] public PackedScene[] Prefabs;
+        [Export] public PackedScene[] PackedScenes;
 
         [ExportGroup("Settings")]
         [Export] public bool DisconnectOnException;

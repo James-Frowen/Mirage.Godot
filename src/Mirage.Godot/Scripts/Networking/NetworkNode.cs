@@ -6,6 +6,27 @@ using MirageGodot.Messages;
 
 namespace MirageGodot
 {
+    public static class SpawnHashHelper
+    {
+        public static bool IsPrefab(int hash)
+        {
+            return hash < 0;
+        }
+        public static bool IsSceneObject(int hash)
+        {
+            return hash > 0;
+        }
+
+        public static int CalculateId(Node root, bool isPrefab)
+        {
+            // prefabs are negative
+            // scene objects are positive
+            var spawnHash = Math.Abs(root.Name.GetHashCode());
+            if (isPrefab)
+                spawnHash *= -1;
+            return spawnHash;
+        }
+    }
     public abstract partial class NetworkNode : Node
     {
         /// <summary>
@@ -32,16 +53,11 @@ namespace MirageGodot
         public NetworkServer Server { get; private set; }
         public NetworkClient Client { get; private set; }
 
+
         internal void Prepare(bool prefab)
         {
             Root ??= this;
-
-            // prefabs are negative
-            // scene objects are positive
-            SpawnHash = Math.Abs(Root.Name.GetHashCode());
-            if (prefab)
-                SpawnHash *= -1;
-
+            SpawnHash = SpawnHashHelper.CalculateId(Root, prefab);
             GD.Print($"Settings SpawnHash to {SpawnHash} for {Root.Name}");
         }
         internal void ServerSpawn(NetworkServer server)
