@@ -19,6 +19,7 @@ High level c# Networking for [Godot](https://godotengine.org/) based on popular 
 
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
 2) Build code `dotnet build`
+    - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the folder easier to find
 3) Copy the `dll` files into your godot project, Or reference them in your `.csproj` file:
     - Mirage.godot.dll
     - Mirage.Logging.dll
