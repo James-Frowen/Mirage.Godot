@@ -15,6 +15,25 @@ High level c# Networking for [Godot](https://godotengine.org/) based on popular 
 
 *work in progrss*
 
+### Build from source
+
+1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
+2) Build code `dotnet build`
+3) Copy the `dll` files into your godot project, Or reference them in your `.csproj` file:
+    - Mirage.godot.dll
+    - Mirage.Logging.dll
+    - Mirage.SocketLayer.dll
+    - Mirage.Core.dll
+5) Build `Mirage.CodeGen.exe` then include `PostBuild` target in your csproj (see below)
+
+```sh
+git clone git@github.com:James-Frowen/Mirage.Godot.git
+cd Mirage.Godot
+dotnet build
+```
+
+**note:** you may want to exclude the `src/Mirage.Godot/Scripts/Example1` folder when building or it will end up in the Mirage.Godot dll
+
 ## Coge Generation
 
 Mirage.Godot uses Mono.Cecil to modify the c# source code after it is compiled, this allowes for features to have high performance and easy to use.
