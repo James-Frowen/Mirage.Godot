@@ -47,3 +47,13 @@ To Setup add this code to the default csproj for the godot project
   </Target>
 ```
 and modify the `Path/To/Mirage.CodeGen.exe ` path to where you built the `Mirage.CodeGen.exe` file
+
+
+## Development
+
+The example use symlinks to include the Mirage.Godot scripts in the 2nd project. 
+
+To clone this repo with those symlinks run as administrator:
+```
+git clone -c core.symlinks=true git@github.com:James-Frowen/Mirage.Godot.git
+```
