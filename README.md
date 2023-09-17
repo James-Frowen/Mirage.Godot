@@ -54,6 +54,6 @@ and modify the `Path/To/Mirage.CodeGen.exe ` path to where you built the `Mirage
 The example use symlinks to include the Mirage.Godot scripts in the 2nd project. 
 
 To clone this repo with those symlinks run as administrator:
-```
+```sh
 git clone -c core.symlinks=true git@github.com:James-Frowen/Mirage.Godot.git
 ```
