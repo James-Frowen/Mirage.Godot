@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://qdcidrs5qnt8"]
 
-[ext_resource type="Script" path="res://Scripts/Networking/NetworkManager.cs" id="1_3ipy8"]
-[ext_resource type="Script" path="res://Scripts/Networking/NetworkHud.cs" id="2_62adp"]
-[ext_resource type="Script" path="res://Scripts/Networking/Udp/UdpSocketFactory.cs" id="3_wl2ot"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkManager.cs" id="1_3ipy8"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkHud.cs" id="2_62adp"]
+[ext_resource type="Script" path="res://Mirage.Godot/Udp/UdpSocketFactory.cs" id="3_wl2ot"]
 
 [node name="NetworkManager" type="Node" node_paths=PackedStringArray("SocketFactory")]
 script = ExtResource("1_3ipy8")

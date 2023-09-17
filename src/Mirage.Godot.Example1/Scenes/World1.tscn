@@ -2,9 +2,9 @@
 
 [ext_resource type="PackedScene" uid="uid://nea4bwm2wwpj" path="res://Prefabs/Player.tscn" id="2_04pam"]
 [ext_resource type="PackedScene" uid="uid://qdcidrs5qnt8" path="res://Prefabs/network_manager.tscn" id="2_die1l"]
-[ext_resource type="Script" path="res://Scripts/Example1/FollowTarget.cs" id="3_qofg0"]
-[ext_resource type="Script" path="res://Scripts/Example1/FollowLocalPlayer.cs" id="4_xs4pi"]
-[ext_resource type="Script" path="res://Scripts/Example1/MobSpawner.cs" id="5_pft5t"]
+[ext_resource type="Script" path="res://Scripts/FollowTarget.cs" id="3_qofg0"]
+[ext_resource type="Script" path="res://Scripts/FollowLocalPlayer.cs" id="4_xs4pi"]
+[ext_resource type="Script" path="res://Scripts/MobSpawner.cs" id="5_pft5t"]
 [ext_resource type="PackedScene" uid="uid://casfcv0sbio2i" path="res://Prefabs/Mob.tscn" id="6_ro56k"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_xhn5i"]

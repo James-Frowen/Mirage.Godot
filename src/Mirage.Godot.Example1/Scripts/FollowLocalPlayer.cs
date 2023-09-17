@@ -1,8 +1,14 @@
 using Godot;
+using Mirage;
 using MirageGodot;
 
 namespace Example1
 {
+    [NetworkMessage]
+    public struct A
+    {
+        public string B;
+    }
     public partial class FollowLocalPlayer : Node
     {
         [Export] private NetworkManager _networkManager;
@@ -11,6 +17,11 @@ namespace Example1
         public override void _Ready()
         {
             _networkManager.Client.World.onSpawn += World_onSpawn;
+
+            _networkManager.Server.SendToAll(new A
+            {
+                B = "Test"
+            });
         }
 
         private void World_onSpawn(NetworkNode obj)

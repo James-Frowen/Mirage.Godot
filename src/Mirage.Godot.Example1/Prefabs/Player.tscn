@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://nea4bwm2wwpj"]
 
-[ext_resource type="Script" path="res://Scripts/Example1/Player.cs" id="1_fehgi"]
+[ext_resource type="Script" path="res://Scripts/Player.cs" id="1_fehgi"]
 [ext_resource type="PackedScene" uid="uid://dil1vaeyacmlk" path="res://art/player.glb" id="1_pmg15"]
-[ext_resource type="Script" path="res://Scripts/Networking/NetworkNode.cs" id="2_h3r1h"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkNode.cs" id="2_h3r1h"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_dmenw"]
 radius = 1.0
