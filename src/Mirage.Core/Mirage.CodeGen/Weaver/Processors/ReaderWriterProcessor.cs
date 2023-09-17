@@ -41,8 +41,12 @@ namespace Mirage.Weaver
             extensionHelper = new SerailizeExtensionHelper(module, readers, writers);
 
             var typeInMirage = module.ImportReference(typeof(NetworkWriter));
+
             // have to resolve to get typedef, then get the module
-            mirageModule = typeInMirage.Resolve().Module;
+            var resolved = typeInMirage.Resolve();
+            if (resolved == null)
+                throw new Exception("Cuild not find Mirage main module");
+            mirageModule = resolved.Module;
         }
 
         public bool Process()
@@ -51,6 +55,8 @@ namespace Mirage.Weaver
 
             var processed = FindAllExtensionMethods();
 
+            // built in message must be done first,
+            // otherwise other writers will try to create function for primitize types and fail
             LoadBuiltinMessages();
 
             // store how many writers are found, we need to check if currentModule adds any

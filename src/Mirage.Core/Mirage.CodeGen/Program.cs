@@ -28,7 +28,6 @@ namespace Mirage.Weaver
                     Environment.Exit(1);
                 }
 
-
                 var dllPath = args[0];
                 Console.WriteLine($"Weaver target: {dllPath}");
                 var hints = new List<string>();
@@ -38,11 +37,23 @@ namespace Mirage.Weaver
                     hints.Add(args[i]);
                 }
 
+                foreach (var hint in hints)
+                    Console.WriteLine($"Dll Hint path: {hint}");
+
                 var data = File.ReadAllBytes(dllPath);
                 var asm = Assembly.Load(data);
 
-                // TODO: use proper Assembly paths 
-                var references = asm.GetReferencedAssemblies().Select(a => Path.Combine(Path.GetDirectoryName(dllPath), a.Name)).ToArray();
+                // TODO: use proper Assembly paths
+                // todo move this to PostProcessorAssemblyResolver
+                var references = asm.GetReferencedAssemblies().Select(a => a.Name).ToArray();
+                var shouldProcess = references.Contains("Mirage.Core") || references.Contains("Mirage.Core.dll");
+                if (!shouldProcess)
+                {
+                    Console.WriteLine($"Skipping weaver on {Path.GetFileName(dllPath)} because assembly does not reference Mirage.Core");
+                    Environment.ExitCode = 0;
+                    return;
+                }
+
                 var compiledAssembly = new CompiledAssembly(dllPath, references, new string[0]);
                 var weaverLogger = new WeaverLogger(false);
                 var weaver = new Weaver(weaverLogger);
