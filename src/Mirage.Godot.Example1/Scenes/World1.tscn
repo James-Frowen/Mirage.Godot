@@ -32,7 +32,6 @@ point_count = 5
 [node name="Main" type="Node3D"]
 
 [node name="NetworkManager" parent="." instance=ExtResource("2_die1l")]
-Prefabs = Array[PackedScene]([ExtResource("6_ro56k"), null])
 PackedScenes = Array[PackedScene]([ExtResource("2_04pam"), ExtResource("6_ro56k")])
 
 [node name="Ground" type="StaticBody3D" parent="."]
