@@ -7,7 +7,6 @@
     <ProjectReference Include="..\Mirage.Core\Mirage.Core\Mirage.Core.csproj" />
     <ProjectReference Include="..\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj" />
     <ProjectReference Include="..\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
-    <ProjectReference Include="..\Mirage.Godot\Mirage.Godot.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
