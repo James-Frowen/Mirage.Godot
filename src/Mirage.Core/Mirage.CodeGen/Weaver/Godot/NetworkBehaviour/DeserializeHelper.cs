@@ -23,7 +23,7 @@ namespace Mirage.Weaver.NetworkBehaviours
             _behaviour = behaviour;
         }
 
-        public override string MethodName => nameof(NetworkBehaviour.DeserializeSyncVars);
+        public override string MethodName => nameof(INetworkNodeWithSyncVar.DeserializeSyncVars);
 
         protected override void AddParameters()
         {

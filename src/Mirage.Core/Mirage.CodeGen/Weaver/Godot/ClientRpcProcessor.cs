@@ -210,8 +210,7 @@ namespace Mirage.Weaver
                     // need to change the value we pass to the
                     // local connection to the server
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.Client));
-                    worker.Append(worker.Create(OpCodes.Callvirt, (NetworkClient nc) => nc.Player));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.GetClientPlayer(default)));
                 }
                 else
                 {

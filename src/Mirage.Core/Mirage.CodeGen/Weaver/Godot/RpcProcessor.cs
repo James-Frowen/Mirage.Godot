@@ -108,9 +108,7 @@ namespace Mirage.Weaver
                     // this is called in the skeleton (the client)
                     // the client should just get the connection to the server and pass that in
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Callvirt, (INetworkNode nb) => nb.Identity));
-                    worker.Append(worker.Create(OpCodes.Callvirt, (NetworkIdentity ni) => ni.Client));
-                    worker.Append(worker.Create(OpCodes.Callvirt, (NetworkClient cl) => cl.Player));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.GetClientPlayer(default)));
                 }
             }
 

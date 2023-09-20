@@ -22,7 +22,7 @@ namespace Mirage
             _rethrowException = rethrowException;
         }
 
-        public void RegisterHandler<T>(MessageDelegateWithPlayer<T> handler)
+        public void RegisterHandler<T>(MessageDelegateWithPlayer<T> handler, bool allowUnauthenticated)
         {
             var msgId = MessagePacker.GetId<T>();
 
@@ -35,7 +35,7 @@ namespace Mirage
             }
 
             var del = MessageWrapper(handler);
-            _messageHandlers[msgId] = new Handler(del);
+            _messageHandlers[msgId] = new Handler(del, allowUnauthenticated);
         }
 
         private static NetworkMessageDelegate MessageWrapper<T>(MessageDelegateWithPlayer<T> handler)
@@ -116,7 +116,8 @@ namespace Mirage
         {
             if (_messageHandlers.TryGetValue(msgType, out var handler))
             {
-                handler.Delegate.Invoke(player, reader);
+                if (CheckAuthenticaiton(player, msgType, handler))
+                    handler.Delegate.Invoke(player, reader);
             }
             else
             {
@@ -134,6 +135,34 @@ namespace Mirage
             }
         }
 
+        private bool CheckAuthenticaiton(INetworkPlayer player, int msgType, Handler handler)
+        {
+            // always allowed
+            if (handler.AllowUnauthenticated)
+                return true;
+
+            // is authenticated
+            if (player.Authentication != null)
+                return true;
+
+            // not authenciated
+            // log and disconnect
+
+            // player is Unauthenticated so we dont trust them
+            // info log only, so attacker can force server to spam logs 
+            if (logger.LogEnabled())
+            {
+                // we know msgType is found (because we have hanlder), so we dont need if check for tryGet
+                MessagePacker.MessageTypes.TryGetValue(msgType, out var type);
+                logger.Log($"Unauthenticated Message {type} received from {player}, player is not Authenticated so handler will not be invoked");
+            }
+
+            logger.LogError("Disconnecting Unauthenticated player");
+            player.Disconnect();
+
+            return false;
+        }
+
         /// <summary>
         /// Handles network messages on client and server
         /// </summary>
@@ -144,10 +173,12 @@ namespace Mirage
         internal class Handler
         {
             public readonly NetworkMessageDelegate Delegate;
+            public readonly bool AllowUnauthenticated;
 
-            public Handler(NetworkMessageDelegate @delegate)
+            public Handler(NetworkMessageDelegate @delegate, bool allowUnauthenticated)
             {
                 Delegate = @delegate;
+                AllowUnauthenticated = allowUnauthenticated;
             }
         }
     }
