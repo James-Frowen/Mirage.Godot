@@ -3,9 +3,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mirage.Core\Mirage.Core\Mirage.Core.csproj" />
     <ProjectReference Include="..\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj" />
     <ProjectReference Include="..\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
   </ItemGroup>

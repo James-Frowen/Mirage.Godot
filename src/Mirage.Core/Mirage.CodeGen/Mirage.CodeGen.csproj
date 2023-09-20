@@ -12,6 +12,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Mirage.Godot\Mirage.godot.csproj" />
-    <ProjectReference Include="..\Mirage.Core\Mirage.Core.csproj" />
   </ItemGroup>
 </Project>
