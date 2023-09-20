@@ -1,7 +1,7 @@
 ﻿using System;
 using Mirage;
 
-namespace MirageGodot.Messages
+namespace Mirage.Messages
 {
     [NetworkMessage]
     public struct RpcMessage

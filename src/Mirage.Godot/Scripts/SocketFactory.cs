@@ -1,7 +1,7 @@
 ﻿using Godot;
 using Mirage.SocketLayer;
 
-namespace MirageGodot
+namespace Mirage
 {
     public abstract partial class SocketFactory : Node, ISocketFactory
     {

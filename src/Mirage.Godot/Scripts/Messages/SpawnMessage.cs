@@ -3,7 +3,7 @@ using System.Text;
 using Godot;
 using Mirage;
 
-namespace MirageGodot.Messages
+namespace Mirage.Messages
 {
     [NetworkMessage]
     public struct SpawnMessage

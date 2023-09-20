@@ -1,7 +1,7 @@
-﻿using Mirage;
+using Mirage;
 using Mirage.Events;
 
-namespace MirageGodot
+namespace Mirage
 {
     public class NetworkNodeEvents
     {
@@ -12,6 +12,7 @@ namespace MirageGodot
         internal AddLateEvent<INetworkPlayer> _onOwnerChanged = new AddLateEvent<INetworkPlayer>();
         internal AddLateEvent _onStopClient = new AddLateEvent();
         internal AddLateEvent _onStopServer = new AddLateEvent();
+
         internal bool _clientStarted;
         internal bool _localPlayerStarted;
         internal bool _hadAuthority;

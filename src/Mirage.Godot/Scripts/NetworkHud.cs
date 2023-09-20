@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Godot;
-using MirageGodot.Udp;
+using Mirage.Udp;
 
-namespace MirageGodot
+namespace Mirage
 {
     public partial class NetworkHud : Node
     {

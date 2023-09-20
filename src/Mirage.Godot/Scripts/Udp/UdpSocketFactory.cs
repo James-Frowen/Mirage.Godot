@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using Godot;
 using Mirage.SocketLayer;
 
-namespace MirageGodot.Udp
+namespace Mirage.Udp
 {
     public partial class UdpSocketFactory : SocketFactory
     {

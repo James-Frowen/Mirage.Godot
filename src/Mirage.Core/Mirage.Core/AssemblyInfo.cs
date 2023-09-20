@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("146.2.2")]
 
+[assembly: InternalsVisibleTo("Mirage.Godot")]
 [assembly: InternalsVisibleTo("Mirage.Tests.Common")]
 [assembly: InternalsVisibleTo("Mirage.Tests")]
 [assembly: InternalsVisibleTo("Mirage.Tests.Generated")]

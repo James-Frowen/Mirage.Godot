@@ -1,10 +1,10 @@
 using Godot;
 
-namespace MirageGodot
+namespace Mirage
 {
     public partial class NetworkScene : Node
     {
-        [Export] private NetworkNode[] SceneObjects;
+        [Export] private NetworkIdentity[] SceneObjects;
 
         public void SpawnSceneObjects(NetworkServer server)
         {

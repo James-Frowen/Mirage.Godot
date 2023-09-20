@@ -2,7 +2,7 @@
 using Godot;
 using Mirage.Logging;
 
-namespace MirageGodot
+namespace Mirage
 {
     public class GodotLogger : ILogHandler
     {

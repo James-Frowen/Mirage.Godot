@@ -3,7 +3,7 @@ using Mirage;
 using Mirage.Logging;
 using Mirage.SocketLayer;
 
-namespace MirageGodot
+namespace Mirage
 {
     public partial class NetworkManager : Node
     {

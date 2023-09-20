@@ -4,32 +4,32 @@ using System.Runtime.CompilerServices;
 using Mirage;
 using Mirage.Logging;
 
-namespace MirageGodot
+namespace Mirage
 {
     /// <summary>
     /// Event that can be used to check authority
     /// </summary>
     /// <param name="hasAuthority">if the owner now has authority or if it was removed</param>
     /// <param name="owner">the new or old owner. Owner value might be null on client side. But will be set on server</param>
-    public delegate void AuthorityChanged(NetworkNode identity, bool hasAuthority, INetworkPlayer owner);
+    public delegate void AuthorityChanged(NetworkIdentity identity, bool hasAuthority, INetworkPlayer owner);
 
     /// <summary>
     /// Holds collection of spawned network objects
     /// <para>This class works on both server and client</para>
     /// </summary>
-    public class NetworkWorld : IObjectLocator<NetworkNode>
+    public class NetworkWorld : IObjectLocator<NetworkIdentity>
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkWorld>();
 
         /// <summary>
         /// Raised when object is spawned
         /// </summary>
-        public event Action<NetworkNode> onSpawn;
+        public event Action<NetworkIdentity> onSpawn;
 
         /// <summary>
         /// Raised when object is unspawned or destroyed
         /// </summary>
-        public event Action<NetworkNode> onUnspawn;
+        public event Action<NetworkIdentity> onUnspawn;
 
         /// <summary>
         /// Raised when authority is given or removed from an identity. It is invoked on both server and client
@@ -44,8 +44,8 @@ namespace MirageGodot
         /// </summary>
         public NetworkTime Time { get; } = new NetworkTime();
 
-        private readonly Dictionary<uint, NetworkNode> _spawnedObjects = new Dictionary<uint, NetworkNode>();
-        public IReadOnlyCollection<NetworkNode> SpawnedIdentities => _spawnedObjects.Values;
+        private readonly Dictionary<uint, NetworkIdentity> _spawnedObjects = new Dictionary<uint, NetworkIdentity>();
+        public IReadOnlyCollection<NetworkIdentity> SpawnedIdentities => _spawnedObjects.Values;
 
         bool IObjectLocator.TryGetIdentity(uint netId, out object identity)
         {
@@ -60,7 +60,7 @@ namespace MirageGodot
                 return false;
             }
         }
-        public bool TryGetIdentity(uint netId, out NetworkNode identity)
+        public bool TryGetIdentity(uint netId, out NetworkIdentity identity)
         {
             return _spawnedObjects.TryGetValue(netId, out identity) && identity != null;
         }
@@ -70,7 +70,7 @@ namespace MirageGodot
         /// </summary>
         /// <param name="netId"></param>
         /// <param name="identity"></param>
-        internal void AddIdentity(uint netId, NetworkNode identity)
+        internal void AddIdentity(uint netId, NetworkIdentity identity)
         {
             if (netId == 0) throw new ArgumentException("id can not be zero", nameof(netId));
             if (identity == null) throw new ArgumentNullException(nameof(identity));
@@ -87,10 +87,10 @@ namespace MirageGodot
             // owner might be set before World is
             // so we need to invoke authChange now if the object has an owner
             if (identity.Owner != null)
-                InvokeOnAuthorityChanged(identity, true, identity.Player);
+                InvokeOnAuthorityChanged(identity, true, identity.Owner);
         }
 
-        internal void RemoveIdentity(NetworkNode identity)
+        internal void RemoveIdentity(NetworkIdentity identity)
         {
             var netId = identity.NetId;
             RemoveInternal(netId, identity);
@@ -105,7 +105,7 @@ namespace MirageGodot
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RemoveInternal(uint netId, NetworkNode identity)
+        private void RemoveInternal(uint netId, NetworkIdentity identity)
         {
             var removed = _spawnedObjects.Remove(netId);
             // only invoke event if values was successfully removed
@@ -123,7 +123,7 @@ namespace MirageGodot
         internal void RemoveDestroyedObjects()
         {
             if (logger.LogEnabled()) logger.Log($"Removing destroyed objects");
-            var removalCollection = new List<NetworkNode>(SpawnedIdentities);
+            var removalCollection = new List<NetworkIdentity>(SpawnedIdentities);
 
             foreach (var identity in removalCollection)
             {
@@ -140,7 +140,7 @@ namespace MirageGodot
             _spawnedObjects.Clear();
         }
 
-        internal void InvokeOnAuthorityChanged(NetworkNode identity, bool hasAuthority, INetworkPlayer owner)
+        internal void InvokeOnAuthorityChanged(NetworkIdentity identity, bool hasAuthority, INetworkPlayer owner)
         {
             OnAuthorityChanged?.Invoke(identity, hasAuthority, owner);
         }

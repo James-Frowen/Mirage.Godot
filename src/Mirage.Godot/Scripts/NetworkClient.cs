@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Mirage;
 using Mirage.Logging;
+using Mirage.Messages;
+using Mirage.RemoteCalls;
 using Mirage.Serialization;
-using MirageGodot.Messages;
 
-namespace MirageGodot
+namespace Mirage
 {
     public class NetworkClient : MirageClient
     {
@@ -15,6 +15,7 @@ namespace MirageGodot
         public NetworkWorld World { get; internal set; }
 
         private readonly Dictionary<int, SpawnHandler> _handlers = new Dictionary<int, SpawnHandler>();
+        internal RpcHandler _rpcHandler;
 
         public NetworkClient(NetworkManager networkManager)
         {
@@ -48,7 +49,7 @@ namespace MirageGodot
             }
         }
 
-        public void RegisterPrefabs(NetworkNode[] nodes, bool allowReplace)
+        public void RegisterPrefabs(NetworkIdentity[] nodes, bool allowReplace)
         {
             foreach (var node in nodes)
             {
@@ -56,7 +57,7 @@ namespace MirageGodot
             }
         }
 
-        private void RegisterPrefab(NetworkNode prefab, bool allowReplace)
+        private void RegisterPrefab(NetworkIdentity prefab, bool allowReplace)
         {
             var spawnHash = prefab.SpawnHash;
             ThrowIfZeroHash(spawnHash);
@@ -95,7 +96,7 @@ namespace MirageGodot
 
             AfterSpawn(msg, existing, node);
         }
-        private NetworkNode SpawnPrefab(SpawnMessage msg, SpawnHandler handler)
+        private NetworkIdentity SpawnPrefab(SpawnMessage msg, SpawnHandler handler)
         {
             var prefab = handler.Prefab;
 
@@ -107,7 +108,7 @@ namespace MirageGodot
             //var rot = msg.SpawnValues.Rotation ?? prefab.transform.rotation;
             //return Instantiate(prefab, pos, rot);
         }
-        private void AfterSpawn(SpawnMessage msg, bool alreadyExisted, NetworkNode identity)
+        private void AfterSpawn(SpawnMessage msg, bool alreadyExisted, NetworkIdentity identity)
         {
             // should never happen, Spawn methods above should throw instead
             Debug.Assert(identity != null);
@@ -121,7 +122,7 @@ namespace MirageGodot
             if (!alreadyExisted)
                 World.AddIdentity(msg.NetId, identity);
         }
-        private void ApplySpawnPayload(NetworkNode identity, SpawnMessage msg)
+        private void ApplySpawnPayload(NetworkIdentity identity, SpawnMessage msg)
         {
             // deserialize components if any payload
             // (Count is 0 if there were no components)
@@ -138,9 +139,9 @@ namespace MirageGodot
     }
     public class SpawnHandler
     {
-        public readonly NetworkNode Prefab;
+        public readonly NetworkIdentity Prefab;
 
-        public SpawnHandler(NetworkNode prefab)
+        public SpawnHandler(NetworkIdentity prefab)
         {
             Prefab = prefab ?? throw new ArgumentNullException(nameof(prefab));
         }

@@ -1,7 +1,7 @@
 ﻿using Godot;
 using Mirage;
 
-namespace MirageGodot
+namespace Mirage
 {
     public partial class CharacterSpawner : Node
     {
