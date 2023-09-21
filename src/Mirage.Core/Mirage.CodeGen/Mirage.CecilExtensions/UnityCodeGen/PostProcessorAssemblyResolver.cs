@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using Mono.Cecil;
 using Unity.CompilationPipeline.Common.ILPostProcessing;
 
@@ -61,8 +60,8 @@ namespace Mirage.CodeGen
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
-            // todo add flag for "Mirage.godot" check instead of always doing it
-            if (name.Name == _compiledAssembly.Name || name.Name == "Mirage.godot")
+            // todo add flag for "Mirage.Godot" check instead of always doing it
+            if (name.Name == _compiledAssembly.Name || name.Name == "Mirage.Godot")
                 return _selfAssembly;
 
             if (!TryFindFile(name.Name, out var fileName))
@@ -139,35 +138,25 @@ namespace Mirage.CodeGen
 
         private static MemoryStream MemoryStreamFor(string fileName)
         {
-            var retryCount = 10;
-            const int waitMs = 1000;
-            while (retryCount > 0)
+            MemoryStream Read()
             {
-                try
+                byte[] byteArray;
+                using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    byte[] byteArray;
-                    using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        byteArray = new byte[fs.Length];
-                        var readLength = fs.Read(byteArray, 0, (int)fs.Length);
-                        if (readLength != fs.Length)
-                            throw new InvalidOperationException("File read length is not full length of file.");
-                    }
-
-                    return new MemoryStream(byteArray);
+                    byteArray = new byte[fs.Length];
+                    var readLength = fs.Read(byteArray, 0, (int)fs.Length);
+                    if (readLength != fs.Length)
+                        throw new InvalidOperationException("File read length is not full length of file.");
                 }
-                catch (IOException)
-                {
-                    retryCount--;
-                    if (retryCount == 0)
-                        throw;
 
-                    Console.WriteLine($"Caught IO Exception for {fileName}, trying {retryCount} more times");
-                    Thread.Sleep(waitMs);
-                }
+                return new MemoryStream(byteArray);
+            }
+            void HandleError(IOException e, int retryCount)
+            {
+                Console.WriteLine($"Caught IO Exception for {fileName}, trying {retryCount} more times");
             }
 
-            throw new InvalidOperationException("Should never get here");
+            return IORetry.Retry(Read, HandleError);
         }
     }
 }
