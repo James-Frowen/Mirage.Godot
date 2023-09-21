@@ -6,7 +6,7 @@ namespace Mirage
     /// <summary>
     /// Extension and static methods, mostly used by weaver 
     /// </summary>
-    public static class NetworkNodeExtensinos
+    public static class NetworkNodeExtensions
     {
         // todo decide which of these should be extension methods vs static only
         public static bool IsServer(this INetworkNode node) => node.Identity.IsServer;

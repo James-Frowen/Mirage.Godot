@@ -177,7 +177,7 @@ namespace Mirage.Weaver
                 if (param.ParameterType.Implements<NetworkPlayer>())
                 {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.GetServerLocalPlayer(default)));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.GetServerLocalPlayer(default)));
                 }
                 else
                 {

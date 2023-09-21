@@ -25,10 +25,10 @@ namespace Mirage.Weaver
             this.logger = logger;
 
             // Cache these so that we dont import them for each site we process
-            IsServer = module.ImportReference(() => NetworkNodeExtensinos.IsServer(default));
-            IsClient = module.ImportReference(() => NetworkNodeExtensinos.IsClient(default));
-            HasAuthority = module.ImportReference(() => NetworkNodeExtensinos.HasAuthority(default));
-            IsLocalPlayer = module.ImportReference(() => NetworkNodeExtensinos.IsMainCharacter(default));
+            IsServer = module.ImportReference(() => NetworkNodeExtensions.IsServer(default));
+            IsClient = module.ImportReference(() => NetworkNodeExtensions.IsClient(default));
+            HasAuthority = module.ImportReference(() => NetworkNodeExtensions.HasAuthority(default));
+            IsLocalPlayer = module.ImportReference(() => NetworkNodeExtensions.IsMainCharacter(default));
         }
 
         public bool ProcessTypes(IReadOnlyList<FoundType> foundTypes)

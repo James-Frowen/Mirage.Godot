@@ -37,7 +37,7 @@ namespace Mirage.Weaver.NetworkBehaviours
 
             // store dirty bit in local variable to avoid calling property multiple times
             Worker.Append(Worker.Create(OpCodes.Ldarg_0));
-            Worker.Append(Worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.SyncVarDirtyBits(default)));
+            Worker.Append(Worker.Create(OpCodes.Call, () => NetworkNodeExtensions.SyncVarDirtyBits(default)));
             Worker.Append(Worker.Create(OpCodes.Stloc, DirtyBitsLocal));
         }
 

@@ -204,7 +204,7 @@ namespace Mirage.Weaver
             // make generic version of SetSyncVar with field type
             WriteLoadField(worker, syncVar);
 
-            var syncVarEqual = module.ImportReference(() => NetworkNodeExtensinos.SyncVarEqual<object>(default, default));
+            var syncVarEqual = module.ImportReference(() => NetworkNodeExtensions.SyncVarEqual<object>(default, default));
             var syncVarEqualGm = new GenericInstanceMethod(syncVarEqual.GetElementMethod());
             syncVarEqualGm.GenericArguments.Add(originalType);
             worker.Append(worker.Create(OpCodes.Call, syncVarEqualGm));
@@ -222,7 +222,7 @@ namespace Mirage.Weaver
             // this.SetDirtyBit(dirtyBit)
             worker.Append(worker.Create(OpCodes.Ldarg_0));
             worker.Append(worker.Create(OpCodes.Ldc_I8, syncVar.DirtyBit));
-            worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.SetDirtyBit(default, default)));
+            worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.SetDirtyBit(default, default)));
 
             if (syncVar.HasHook)
             {
@@ -233,7 +233,7 @@ namespace Mirage.Weaver
                 // check if there is guard
                 worker.Append(worker.Create(OpCodes.Ldarg_0));
                 worker.Append(worker.Create(OpCodes.Ldc_I8, syncVar.DirtyBit));
-                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.GetSyncVarHookGuard(default, default)));
+                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.GetSyncVarHookGuard(default, default)));
                 worker.Append(worker.Create(OpCodes.Brtrue, afterIf));
 
                 if (syncVar.InvokeHookOnOwner)
@@ -259,7 +259,7 @@ namespace Mirage.Weaver
                 worker.Append(worker.Create(OpCodes.Ldarg_0));
                 worker.Append(worker.Create(OpCodes.Ldc_I8, syncVar.DirtyBit));
                 worker.Append(worker.Create(OpCodes.Ldc_I4_1));
-                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.SetSyncVarHookGuard(default, default, default)));
+                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.SetSyncVarHookGuard(default, default, default)));
 
                 // call hook (oldValue, newValue)
                 // Generates: OnValueChanged(oldValue, value)
@@ -269,7 +269,7 @@ namespace Mirage.Weaver
                 worker.Append(worker.Create(OpCodes.Ldarg_0));
                 worker.Append(worker.Create(OpCodes.Ldc_I8, syncVar.DirtyBit));
                 worker.Append(worker.Create(OpCodes.Ldc_I4_0));
-                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.SetSyncVarHookGuard(default, default, default)));
+                worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.SetSyncVarHookGuard(default, default, default)));
 
                 worker.Append(afterIf);
             }
@@ -676,7 +676,7 @@ namespace Mirage.Weaver
                 if (!syncVar.InvokeHookOnServer)
                 {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.IsServer(default)));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensions.IsServer(default)));
                     // if true, go to start of if
                     // this will act as an OR for the IsServer check
                     worker.Append(worker.Create(OpCodes.Brtrue, endHookInvoke));
@@ -689,7 +689,7 @@ namespace Mirage.Weaver
                 // 'newValue'
                 WriteLoadField(worker, syncVar);
                 // call the function
-                var syncVarEqual = module.ImportReference(() => NetworkNodeExtensinos.SyncVarEqual<object>(default, default));
+                var syncVarEqual = module.ImportReference(() => NetworkNodeExtensions.SyncVarEqual<object>(default, default));
                 var syncVarEqualGm = new GenericInstanceMethod(syncVarEqual.GetElementMethod());
                 syncVarEqualGm.GenericArguments.Add(originalType);
                 worker.Append(worker.Create(OpCodes.Call, syncVarEqualGm));
