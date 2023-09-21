@@ -10,14 +10,14 @@ config_version=5
 
 [application]
 
-config/name="Mirage.Godot.example1"
+config/name="Mirage.Godot.Example1"
 run/main_scene="res://Scenes/World1.tscn"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [dotnet]
 
-project/assembly_name="Mirage.Godot.example1"
+project/assembly_name="Mirage.Godot.Example1"
 project/solution_directory="../../"
 
 [input]
