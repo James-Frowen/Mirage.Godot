@@ -1,160 +1,427 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
+using Godot;
+using Mirage.Authentication;
+using Mirage.Events;
 using Mirage.Logging;
-using Mirage.Messages;
-using Mirage.RemoteCalls;
 using Mirage.Serialization;
+using Mirage.SocketLayer;
 
 namespace Mirage
 {
-    public class NetworkClient : MirageClient
+    public enum ConnectState
     {
-        private static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkClient));
-
-        public NetworkManager Manager { get; }
-        public NetworkWorld World { get; internal set; }
-
-        private readonly Dictionary<int, SpawnHandler> _handlers = new Dictionary<int, SpawnHandler>();
-        internal RpcHandler _rpcHandler;
-
-        public NetworkClient(NetworkManager networkManager)
-        {
-            Manager = networkManager;
-        }
-
-        protected override void OnStarted()
-        {
-            MessageHandler.RegisterHandler<SpawnMessage>(OnSpawnMessage);
-        }
-
-        // todo do we want this clean function? might not work well with multiple scenes, maybe NetwokrScene should remove its own objects instead
-        //      support just 1 scene to start with tho to be
-        public void ClearSceneObjectsFromHandler()
-        {
-            using (var wrapper = AutoPool<List<int>>.Take())
-            {
-                var list = wrapper.Item;
-                list.Clear();
-                foreach (var key in _handlers.Keys)
-                {
-                    // remove positive numbers because they are scene objects
-                    if (key > 0)
-                        list.Add(key);
-                }
-
-                foreach (var key in list)
-                {
-                    _handlers.Remove(key);
-                }
-            }
-        }
-
-        public void RegisterPrefabs(NetworkIdentity[] nodes, bool allowReplace)
-        {
-            foreach (var node in nodes)
-            {
-                RegisterPrefab(node, allowReplace);
-            }
-        }
-
-        private void RegisterPrefab(NetworkIdentity prefab, bool allowReplace)
-        {
-            var spawnHash = prefab.SpawnHash;
-            ThrowIfZeroHash(spawnHash);
-
-            if (logger.LogEnabled()) logger.Log($"Registering prefab '{prefab.Name}' as asset:{spawnHash:X}");
-            var handler = new SpawnHandler(prefab);
-            if (allowReplace)
-                _handlers[spawnHash] = handler;
-            else
-                _handlers.Add(spawnHash, handler);
-        }
-        private static void ThrowIfZeroHash(int prefabHash)
-        {
-            if (prefabHash == 0)
-                throw new ArgumentException("prefabHash is zero", nameof(prefabHash));
-        }
-
-        private void OnSpawnMessage(SpawnMessage msg)
-        {
-            if (msg.SpawnHash == 0)
-                throw new SpawnObjectException($"Empty prefabHash and sceneId for netId: {msg.NetId}");
-
-            if (logger.LogEnabled()) logger.Log($"[ClientObjectManager] Spawn: {msg}");
-
-            // was the object already spawned?
-            var existing = World.TryGetIdentity(msg.NetId, out var node);
-
-            if (!existing)
-            {
-                var spawnHash = msg.SpawnHash;
-                if (!_handlers.TryGetValue(spawnHash, out var handler))
-                    throw new SpawnObjectException($"No prefab for {msg.SpawnHash:X}. did you forget to add it to the ClientObjectManager?");
-
-                node = SpawnPrefab(msg, handler);
-            }
-
-            AfterSpawn(msg, existing, node);
-        }
-        private NetworkIdentity SpawnPrefab(SpawnMessage msg, SpawnHandler handler)
-        {
-            var prefab = handler.Prefab;
-
-            if (logger.LogEnabled()) logger.Log($"Instantiate Prefab for netid:{msg.NetId}, hash:{msg.SpawnHash:X}, prefab:{prefab.Name}");
-
-            throw new NotImplementedException();
-            // we need to set position and rotation here incase that their values are used from awake/onenable
-            //var pos = msg.SpawnValues.Position ?? prefab.transform.position;
-            //var rot = msg.SpawnValues.Rotation ?? prefab.transform.rotation;
-            //return Instantiate(prefab, pos, rot);
-        }
-        private void AfterSpawn(SpawnMessage msg, bool alreadyExisted, NetworkIdentity identity)
-        {
-            // should never happen, Spawn methods above should throw instead
-            Debug.Assert(identity != null);
-
-            if (identity.NetId != 0 && identity.NetId != msg.NetId)
-                logger.LogWarning($"Spawn Identity already had a netId but SpawnMessage has a differnet NetId. Current Id={identity.NetId}, SpawnMessag Id={msg.NetId}");
-
-            ApplySpawnPayload(identity, msg);
-
-            // add after applying payload, but only if it is new object
-            if (!alreadyExisted)
-                World.AddIdentity(msg.NetId, identity);
-        }
-        private void ApplySpawnPayload(NetworkIdentity identity, SpawnMessage msg)
-        {
-            // deserialize components if any payload
-            // (Count is 0 if there were no components)
-            if (msg.Payload.Count > 0)
-            {
-                using (var payloadReader = NetworkReaderPool.GetReader(msg.Payload, World))
-                {
-                    identity.OnDeserializeAll(payloadReader, true);
-                }
-            }
-
-            identity.ClientSpawn(this, msg);
-        }
-    }
-    public class SpawnHandler
-    {
-        public readonly NetworkIdentity Prefab;
-
-        public SpawnHandler(NetworkIdentity prefab)
-        {
-            Prefab = prefab ?? throw new ArgumentNullException(nameof(prefab));
-        }
+        Disconnected,
+        Connecting,
+        Connected,
     }
 
     /// <summary>
-    /// Exception thrown when spawning fails
+    /// This is a network client class used by the networking system. It contains a NetworkConnection that is used to connect to a network server.
+    /// <para>The <see cref="NetworkClient">NetworkClient</see> handle connection state, messages handlers, and connection configuration. There can be many <see cref="NetworkClient">NetworkClient</see> instances in a process at a time, but only one that is connected to a game server (<see cref="NetworkServer">NetworkServer</see>) that uses spawned objects.</para>
+    /// <para><see cref="NetworkClient">NetworkClient</see> has an internal update function where it handles events from the transport layer. This includes asynchronous connect events, disconnect events and incoming data from a server.</para>
     /// </summary>
-    [Serializable]
-    public class SpawnObjectException : Exception
+    public partial class NetworkClient : Node, IMessageSender
     {
-        public SpawnObjectException(string message) : base(message)
+        private static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkClient));
+
+        [Export]
+        public bool EnablePeerMetrics;
+        [Export(hintString: "Sequence size of buffer in bits. 10 => array size 1024 => ~17 seconds at 60hz")]
+        public int MetricsSize = 10;
+        [Export(hintString: "Creates Socket for Peer to use")]
+        public SocketFactory SocketFactory;
+        [Export]
+        public ClientObjectManager ObjectManager;
+        [Export]
+        public bool DisconnectOnException = true;
+        [Export(hintString: "Should the message handler rethrow the exception after logging. This should only be used when deubgging as it may stop other Mirage functions from running after messages handling")]
+        public bool RethrowException = false;
+        [Export(hintString: "Authentication component attached to this object")]
+        public AuthenticatorSettings Authenticator;
+
+        public Metrics Metrics { get; private set; }
+
+        /// <summary>
+        /// Config for peer, if not set will use default settings
+        /// </summary>
+        public Config PeerConfig { get; set; }
+
+        private Peer _peer;
+
+        private AddLateEvent _started = new AddLateEvent();
+        private AddLateEvent<NetworkPlayer> _connected = new AddLateEvent<NetworkPlayer>();
+        private AddLateEvent<NetworkPlayer> _authenticated = new AddLateEvent<NetworkPlayer>();
+        private AddLateEvent<ClientStoppedReason> _disconnected = new AddLateEvent<ClientStoppedReason>();
+
+        /// <summary>
+        /// Event fires when the client starts, before it has connected to the Server.
+        /// </summary>
+        public IAddLateEvent Started => _started;
+
+        /// <summary>
+        /// Event fires once the Client has connected its Server.
+        /// </summary>
+        public IAddLateEvent<NetworkPlayer> Connected => _connected;
+
+        /// <summary>
+        /// Event fires after the Client connection has successfully been authenticated with its Server.
+        /// </summary>
+        public IAddLateEvent<NetworkPlayer> Authenticated => _authenticated;
+
+        /// <summary>
+        /// Event fires after the Client has disconnected from its Server and Cleanup has been called.
+        /// </summary>
+        public IAddLateEvent<ClientStoppedReason> Disconnected => _disconnected;
+
+        /// <summary>
+        /// The NetworkConnection object this client is using.
+        /// </summary>
+        public NetworkPlayer Player { get; internal set; }
+
+        internal ConnectState _connectState = ConnectState.Disconnected;
+
+        /// <summary>
+        /// active is true while a client is connecting/connected
+        /// (= while the network is active)
+        /// </summary>
+        public bool Active => _connectState == ConnectState.Connecting || _connectState == ConnectState.Connected;
+
+        /// <summary>
+        /// This gives the current connection status of the client.
+        /// </summary>
+        public new bool IsConnected => _connectState == ConnectState.Connected;
+
+        public NetworkWorld World { get; private set; }
+        public SyncVarSender SyncVarSender { get; private set; }
+        private SyncVarReceiver _syncVarReceiver;
+        public MessageHandler MessageHandler { get; private set; }
+
+        /// <summary>
+        /// Set to true if you want to manually call <see cref="UpdateReceive"/> and <see cref="UpdateSent"/> and stop mirage from automatically calling them
+        /// </summary>
+        public bool ManualUpdate = false;
+
+        /// <summary>
+        /// Is this NetworkClient connected to a local server in host mode
+        /// </summary>
+        public bool IsLocalClient { get; private set; }
+
+        /// <summary>
+        /// Connect client to a NetworkServer instance.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="port"></param>
+        public void Connect(string address = null, ushort? port = null)
         {
+            ThrowIfActive();
+            ThrowIfSocketIsMissing();
+
+            _connectState = ConnectState.Connecting;
+
+            World = new NetworkWorld();
+            SyncVarSender = new SyncVarSender();
+
+            var endPoint = SocketFactory.GetConnectEndPoint(address, port);
+            if (logger.LogEnabled()) logger.Log($"Client connecting to endpoint: {endPoint}");
+
+            var socket = SocketFactory.CreateClientSocket();
+            var maxPacketSize = SocketFactory.MaxPacketSize;
+            MessageHandler = new MessageHandler(World, DisconnectOnException, RethrowException);
+            var dataHandler = new DataHandler(MessageHandler);
+
+            _syncVarReceiver = new SyncVarReceiver(World, MessageHandler);
+
+            Metrics = EnablePeerMetrics ? new Metrics(MetricsSize) : null;
+            var config = PeerConfig ?? new Config();
+            NetworkWriterPool.Configure(maxPacketSize);
+
+            _peer = new Peer(socket, maxPacketSize, dataHandler, config, LogFactory.GetLogger<Peer>(), Metrics);
+            _peer.OnConnected += Peer_OnConnected;
+            _peer.OnConnectionFailed += Peer_OnConnectionFailed;
+            _peer.OnDisconnected += Peer_OnDisconnected;
+
+            var connection = _peer.Connect(endPoint);
+
+            // setup all the handlers
+            Player = new NetworkPlayer(connection, false);
+            dataHandler.SetConnection(connection, Player);
+
+            RegisterMessageHandlers();
+
+            Authenticate();
+
+            // invoke started event after everything is set up, but before peer has connected
+            if (ObjectManager != null)
+                ObjectManager.ClientStarted(this);
+            _started.Invoke();
+        }
+
+        private void ThrowIfActive()
+        {
+            if (Active) throw new InvalidOperationException("Client is already active");
+        }
+
+        private void ThrowIfSocketIsMissing()
+        {
+            if (SocketFactory is null)
+            {
+                SocketFactory = this.GetComponent<SocketFactory>();
+            }
+            if (SocketFactory == null)
+                throw new InvalidOperationException($"{nameof(SocketFactory)} could not be found for ${nameof(NetworkServer)}");
+        }
+
+        private void Peer_OnConnected(IConnection conn)
+        {
+            if (!IsLocalClient)
+                World.Time.UpdateClient(this);
+
+            _connectState = ConnectState.Connected;
+            _connected.Invoke(Player);
+        }
+
+        private void Peer_OnConnectionFailed(IConnection conn, RejectReason reason)
+        {
+            if (logger.LogEnabled()) logger.Log($"Failed to connect to {conn.EndPoint} with reason {reason}");
+            Player?.MarkAsDisconnected();
+            _disconnected?.Invoke(reason.ToClientStoppedReason());
+            Cleanup();
+        }
+
+        private void Peer_OnDisconnected(IConnection conn, DisconnectReason reason)
+        {
+            if (logger.LogEnabled()) logger.Log($"Disconnected from {conn.EndPoint} with reason {reason}");
+            Player?.MarkAsDisconnected();
+            _disconnected?.Invoke(reason.ToClientStoppedReason());
+            Cleanup();
+        }
+
+        private void OnHostDisconnected()
+        {
+            Player?.MarkAsDisconnected();
+            _disconnected?.Invoke(ClientStoppedReason.HostModeStopped);
+        }
+
+        internal void ConnectHost(NetworkServer server, IDataHandler serverDataHandler)
+        {
+            ThrowIfActive();
+
+            logger.Log("Client Connect Host to Server");
+            // start connecting for setup, then "Peer_OnConnected" below will change to connected
+            _connectState = ConnectState.Connecting;
+
+            World = server.World;
+
+            // create local connection objects and connect them
+            MessageHandler = new MessageHandler(World, DisconnectOnException, RethrowException);
+            var dataHandler = new DataHandler(MessageHandler);
+            (var clientConn, var serverConn) = PipePeerConnection.Create(dataHandler, serverDataHandler, OnHostDisconnected, null);
+
+            // set up client before connecting to server, server could invoke handlers
+            IsLocalClient = true;
+            Player = new NetworkPlayer(clientConn, true);
+            dataHandler.SetConnection(clientConn, Player);
+
+            // invoke started event after everything is set up, but before peer has connected
+            if (ObjectManager != null)
+                ObjectManager.ClientStarted(this);
+            _started.Invoke();
+
+            // we need add server connection to server's dictionary first
+            // then invoke connected event on client (client has to connect first or it will miss message in NetworkScenemanager)
+            // then invoke connected event on server
+
+            server.AddLocalConnection(this, serverConn);
+            Peer_OnConnected(clientConn);
+            Authenticate();
+        }
+
+        private void Authenticate()
+        {
+            // client wants to wait for auth message even if there is no Authenticators
+            // this makes host setup easier,
+            // rather than doing checks and making sure functions are ivnoked in correct order
+            // we can just use the same logic as normal clients
+            // this will cause both server and client to call SetAuthentication first,
+            // and then invoke Authenticated after
+
+            var waiter = new MessageWaiter<AuthSuccessMessage>(this, allowUnauthenticated: true);
+            // DONT use async here
+            // we need to invoke set data and invoke _authenticated right away
+            // this is because messages received after AuthSuccessMessage (from server) assume the client is now authenticated
+            // but if we use async, we wont set Authentication until next update, causing message to be received or dropped (or kicked from Unauthenticated)
+            waiter.Callback(AuthenticationSuccessCallback);
+        }
+
+        private void AuthenticationSuccessCallback(NetworkPlayer _, AuthSuccessMessage message)
+        {
+            if (logger.LogEnabled()) logger.Log($"Authentication successful with {message.AuthenticatorName}");
+
+            INetworkAuthenticator authenticator = null;
+            // only need to check if server sent its name
+            if (!string.IsNullOrEmpty(message.AuthenticatorName))
+            {
+                if (Authenticator == null)
+                    throw new InvalidOperationException("Authenticator set on server but not client");
+
+                authenticator = Authenticator.Authenticators.FirstOrDefault(x => x.AuthenticatorName == message.AuthenticatorName);
+            }
+
+            Player.SetAuthentication(new PlayerAuthentication(authenticator, null));
+            _authenticated.Invoke(Player);
+        }
+
+
+        public override void _ExitTree()
+        {
+            if (Active)
+                Disconnect();
+        }
+
+        /// <summary>
+        /// Disconnect from server.
+        /// <para>The disconnect message will be invoked.</para>
+        /// </summary>
+        public void Disconnect()
+        {
+            if (!Active)
+            {
+                logger.LogWarning("Can't disconnect client because it is not active");
+                return;
+            }
+
+            Player.Connection.Disconnect();
+            Cleanup();
+        }
+
+        /// <summary>
+        /// This sends a network message with a message Id to the server. This message is sent on channel zero, which by default is the reliable channel.
+        /// <para>The message must be an instance of a class derived from MessageBase.</para>
+        /// <para>The message id passed to Send() is used to identify the handler function to invoke on the server when the message is received.</para>
+        /// </summary>
+        /// <typeparam name="T">The message type to unregister.</typeparam>
+        /// <param name="message"></param>
+        /// <param name="channelId"></param>
+        /// <returns>True if message was sent.</returns>
+        public void Send<T>(T message, Channel channelId = Channel.Reliable)
+        {
+            // Coburn, 2022-12-19: Fix NetworkClient.Send triggering NullReferenceException
+            // This is caused by Send() being fired after the Player object is disposed or reset
+            // to null. Instead, throw a InvalidOperationException if that is the case.
+
+            if (Player == null)
+                ThrowIfSendingWhileNotConnected();
+
+            // Otherwise, send it off.
+            Player.Send(message, channelId);
+        }
+
+        public void Send(ArraySegment<byte> segment, Channel channelId = Channel.Reliable)
+        {
+            // For more information, see notes in Send<T> ...
+            if (Player == null)
+                ThrowIfSendingWhileNotConnected();
+
+            // Otherwise, send it off.
+            Player.Send(segment, channelId);
+        }
+
+        public void Send<T>(T message, INotifyCallBack notifyCallBack)
+        {
+            // For more information, see notes in Send<T> ...
+            if (Player == null)
+                ThrowIfSendingWhileNotConnected();
+
+            // Otherwise, send it off.
+            Player.Send(message, notifyCallBack);
+        }
+
+        public override void _Process(double delta)
+        {
+            World.Time.UpdateFrameTime();
+            // local connection?
+            if (!IsLocalClient && Active && _connectState == ConnectState.Connected)
+            {
+                // only update things while connected
+                World.Time.UpdateClient(this);
+            }
+
+            if (ManualUpdate)
+                return;
+
+            UpdateReceive();
+            UpdateSent();
+        }
+
+        public void UpdateReceive() => _peer?.UpdateReceive();
+        public void UpdateSent()
+        {
+            SyncVarSender?.Update();
+            _peer?.UpdateSent();
+        }
+
+        internal void RegisterMessageHandlers()
+        {
+            MessageHandler.RegisterHandler<NetworkPongMessage>(World.Time.OnClientPong, allowUnauthenticated: true);
+        }
+
+        /// <summary>
+        /// Shut down a client.
+        /// <para>This should be done when a client is no longer going to be used.</para>
+        /// </summary>
+        private void Cleanup()
+        {
+            logger.Log("Shutting down client.");
+
+            IsLocalClient = false;
+
+            _connectState = ConnectState.Disconnected;
+
+            Player = null;
+            _connected.Reset();
+            _authenticated.Reset();
+            _disconnected.Reset();
+
+            if (_peer != null)
+            {
+                //remove handlers first to stop loop
+                _peer.OnConnected -= Peer_OnConnected;
+                _peer.OnConnectionFailed -= Peer_OnConnectionFailed;
+                _peer.OnDisconnected -= Peer_OnDisconnected;
+                _peer.Close();
+                _peer = null;
+            }
+        }
+
+        private void ThrowIfSendingWhileNotConnected()
+        {
+            throw new InvalidOperationException("Attempting to send data while not connected. This is not allowed. " +
+                "NetworkClient Player connection reference is null, in which the connection may have been disconnected/terminated before the Send function was called.");
+        }
+
+        internal class DataHandler : IDataHandler
+        {
+            private IConnection _connection;
+            private NetworkPlayer _player;
+            private readonly IMessageReceiver _messageHandler;
+
+            public DataHandler(IMessageReceiver messageHandler)
+            {
+                _messageHandler = messageHandler;
+            }
+
+            public void SetConnection(IConnection connection, NetworkPlayer player)
+            {
+                _connection = connection;
+                _player = player;
+            }
+
+            public void ReceiveMessage(IConnection connection, ArraySegment<byte> message)
+            {
+                logger.Assert(_connection == connection);
+                _messageHandler.HandleMessage(_player, message);
+            }
         }
     }
 }

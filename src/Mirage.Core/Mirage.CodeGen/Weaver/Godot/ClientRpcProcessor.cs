@@ -113,7 +113,7 @@ namespace Mirage.Weaver
             // see ClientRpcSender.Send methods
             if (target == RpcTarget.Observers)
                 worker.Append(worker.Create(excludeOwner.OpCode_Ldc()));
-            else if (target == RpcTarget.Player && HasFirstParameter<INetworkPlayer>(md))
+            else if (target == RpcTarget.Player && HasFirstParameter<NetworkPlayer>(md))
                 worker.Append(worker.Create(OpCodes.Ldarg_1));
             else // owner, or Player with no arg
                 worker.Append(worker.Create(OpCodes.Ldnull));
@@ -203,10 +203,10 @@ namespace Mirage.Weaver
             for (var i = 0; i < rpc.Parameters.Count; i++)
             {
                 var parameter = rpc.Parameters[i];
-                if (parameter.ParameterType.Is<INetworkPlayer>())
+                if (parameter.ParameterType.Is<NetworkPlayer>())
                 {
                     // when a client rpc is invoked in host mode
-                    // and it receives a INetworkPlayer,  we
+                    // and it receives a NetworkPlayer,  we
                     // need to change the value we pass to the
                     // local connection to the server
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
@@ -255,7 +255,7 @@ namespace Mirage.Weaver
         private void ValidateAttribute(MethodDefinition md, CustomAttribute clientRpcAttr)
         {
             var target = clientRpcAttr.GetField(nameof(ClientRpcAttribute.target), RpcTarget.Observers);
-            if (target == RpcTarget.Player && !HasFirstParameter<INetworkPlayer>(md))
+            if (target == RpcTarget.Player && !HasFirstParameter<NetworkPlayer>(md))
             {
                 throw new RpcException("ClientRpc with RpcTarget.Player needs a network player parameter", md);
             }

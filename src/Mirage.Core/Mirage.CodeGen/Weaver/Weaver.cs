@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 using Mirage.CodeGen;
 using Mono.Cecil;
 using Unity.CompilationPipeline.Common.ILPostProcessing;
@@ -124,13 +125,13 @@ namespace Mirage.Weaver
             var isMonoBehaviour = false;
             while (parent != null)
             {
-                if (parent.Is<NetworkNode>())
+                if (parent.Is<NetworkBehaviour>())
                 {
                     isNetworkBehaviour = true;
                     isMonoBehaviour = true;
                     break;
                 }
-                if (parent.Is<MonoBehaviour>())
+                if (parent.Is<Node>())
                 {
                     isMonoBehaviour = true;
                     break;

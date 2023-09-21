@@ -1,12 +1,20 @@
 using System;
 using Mirage.CodeGen;
 using Mirage.Serialization;
+using Mirage.Weaver.SyncVars;
 using Mono.Cecil;
 
 namespace Mirage.Weaver.Serialization
 {
     internal static class ValueSerializerFinder
     {
+        /// <exception cref="ValueSerializerException">Throws when attribute is used incorrectly</exception>
+        /// <exception cref="SerializeFunctionException">Throws when can not generate read or write function</exception>
+        public static ValueSerializer GetSerializer(FoundSyncVar syncVar, Writers writers, Readers readers)
+        {
+            return GetSerializer(syncVar.Module, syncVar.Behaviour.TypeDefinition, syncVar.FieldDefinition, syncVar.FieldDefinition.FieldType, syncVar.FieldDefinition.Name, writers, readers);
+        }
+
         /// <exception cref="ValueSerializerException">Throws when attribute is used incorrectly</exception>
         /// <exception cref="SerializeFunctionException">Throws when can not generate read or write function</exception>
         public static ValueSerializer GetSerializer(ModuleDefinition module, FieldReference field, TypeReference fieldType, Writers writers, Readers readers)

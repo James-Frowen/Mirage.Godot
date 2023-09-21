@@ -13,7 +13,7 @@ namespace Mirage
             _networkManager.Server.Connected += Server_Connected;
         }
 
-        private void Server_Connected(INetworkPlayer obj)
+        private void Server_Connected(NetworkPlayer obj)
         {
             if (_spawnOnConnect)
             {

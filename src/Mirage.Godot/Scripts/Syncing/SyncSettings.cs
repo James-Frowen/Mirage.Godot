@@ -27,6 +27,14 @@ namespace Mirage
             Interval = 0.1f,
         };
 
+        public SyncSettings(SyncFrom from, SyncTo to, SyncTiming timing, float interval)
+        {
+            From = from;
+            To = to;
+            Timing = timing;
+            Interval = interval;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void UpdateTime(ref float nextSyncTime, float now)
         {

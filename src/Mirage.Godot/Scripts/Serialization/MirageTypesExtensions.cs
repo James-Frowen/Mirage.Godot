@@ -52,7 +52,7 @@ namespace Mirage.Serialization
 
         private static NetworkIdentity FindNetworkIdentity(IObjectLocator noTypeobjectLocator, uint netId)
         {
-            var objectLocator = (IObjectLocator<NetworkIdentity>)noTypeobjectLocator;
+            var objectLocator = (IObjectLocator)noTypeobjectLocator;
             if (objectLocator == null)
             {
                 if (logger.WarnEnabled()) logger.LogWarning($"Could not find NetworkIdentity because ObjectLocator is null");

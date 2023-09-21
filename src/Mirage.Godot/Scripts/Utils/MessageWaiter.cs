@@ -11,18 +11,18 @@ namespace Mirage
     {
         private bool _received;
         private T _message;
-        private MirageClient _client;
+        private NetworkClient _client;
         private MessageHandler _messageHandler;
         private MessageDelegateWithPlayer<T> callback;
 
-        public MessageWaiter(MirageClient client)
+        public MessageWaiter(NetworkClient client, bool allowUnauthenticated = false)
         {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _messageHandler = _client.MessageHandler;
-            _messageHandler.RegisterHandler<T>(HandleMessage);
+            _messageHandler.RegisterHandler<T>(HandleMessage, allowUnauthenticated);
         }
 
-        private void HandleMessage(INetworkPlayer player, T message)
+        private void HandleMessage(NetworkPlayer player, T message)
         {
             _message = message;
             _received = true;

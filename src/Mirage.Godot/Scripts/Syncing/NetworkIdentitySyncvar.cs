@@ -27,7 +27,7 @@ namespace Mirage
                 if (_identity != null)
                     return _identity;
 
-                if (_objectLocator is IObjectLocator<NetworkIdentity> locator && locator.TryGetIdentity(NetId, out var result))
+                if (_objectLocator is IObjectLocator locator && locator.TryGetIdentity(NetId, out var result))
                 {
                     return result;
                 }
@@ -60,7 +60,7 @@ namespace Mirage
 
             NetworkIdentity identity = null;
 
-            if (mirageReader.ObjectLocator is IObjectLocator<NetworkIdentity> locator)
+            if (mirageReader.ObjectLocator is IObjectLocator locator)
                 locator.TryGetIdentity(netId, out identity);
 
             return new NetworkIdentitySyncvar

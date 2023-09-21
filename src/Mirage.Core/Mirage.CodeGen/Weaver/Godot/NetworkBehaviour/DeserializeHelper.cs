@@ -80,7 +80,7 @@ namespace Mirage.Weaver.NetworkBehaviours
             Worker.Append(Worker.Create(OpCodes.Ldarg_0));
             Worker.Append(Worker.Create(OpCodes.Ldloc, DirtyBitsLocal));
             Worker.Append(Worker.Create(OpCodes.Ldc_I4, _behaviour.syncVarCounter.GetInBase()));
-            Worker.Append(Worker.Create<NetworkBehaviour>(OpCodes.Call, nb => nb.SetDeserializeMask(default, default)));
+            Worker.Append(Worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.SetDeserializeMask(default, default, default)));
         }
 
         internal void WriteIfSyncVarDirty(FoundSyncVar syncVar, Action body)

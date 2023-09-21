@@ -6,7 +6,7 @@ namespace Mirage
 {
     public static class GeneratedCode
     {
-        private static readonly ILogger logger = LogFactory.GetLogger(typeof(MirageClient));
+        private static readonly ILogger logger = LogFactory.GetLogger(typeof(GeneratedCode));
 
         public const string GENERATED_NAMEPACE = "Mirage";
         public const string GENERATED_CLASS = "GeneratedNetworkCode";

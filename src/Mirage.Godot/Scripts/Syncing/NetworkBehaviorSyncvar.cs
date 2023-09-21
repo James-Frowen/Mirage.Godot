@@ -29,7 +29,7 @@ namespace Mirage
                 if (_component != null)
                     return _component;
 
-                if (_objectLocator is IObjectLocator<NetworkIdentity> locator && locator.TryGetIdentity(NetId, out var result))
+                if (_objectLocator is IObjectLocator locator && locator.TryGetIdentity(NetId, out var result))
                 {
                     return result.NetworkBehaviours[_componentId];
                 }
@@ -67,7 +67,7 @@ namespace Mirage
 
             NetworkIdentity identity = null;
             bool hasValue;
-            if (mirageReader.ObjectLocator is IObjectLocator<NetworkIdentity> locator)
+            if (mirageReader.ObjectLocator is IObjectLocator locator)
                 hasValue = locator.TryGetIdentity(netId, out identity);
             else
                 hasValue = false;

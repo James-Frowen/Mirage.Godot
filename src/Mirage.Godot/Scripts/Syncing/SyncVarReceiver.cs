@@ -11,14 +11,14 @@ namespace Mirage
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(SyncVarReceiver));
 
-        private readonly IObjectLocator<NetworkIdentity> _objectLocator;
+        private readonly IObjectLocator _objectLocator;
 
         /// <summary>
         /// skip messageHandler to not register UpdateVarsMessage
         /// </summary>
         /// <param name="objectLocator"></param>
         /// <param name="messageHandler"></param>
-        public SyncVarReceiver(IObjectLocator<NetworkIdentity> objectLocator, MessageHandler messageHandler)
+        public SyncVarReceiver(IObjectLocator objectLocator, MessageHandler messageHandler)
         {
             _objectLocator = objectLocator;
             if (messageHandler != null)
@@ -26,7 +26,7 @@ namespace Mirage
         }
 
 
-        private void OnUpdateVarsMessage(INetworkPlayer sender, UpdateVarsMessage msg)
+        private void OnUpdateVarsMessage(NetworkPlayer sender, UpdateVarsMessage msg)
         {
             if (logger.LogEnabled()) logger.Log("SyncVarReceiver.OnUpdateVarsMessage " + msg.NetId);
 
@@ -46,7 +46,7 @@ namespace Mirage
             }
         }
 
-        private bool ValidateReceive(INetworkPlayer sender, NetworkIdentity identity)
+        private bool ValidateReceive(NetworkPlayer sender, NetworkIdentity identity)
         {
             // only need to validate if we are server
             // client can always receive from server
@@ -61,7 +61,7 @@ namespace Mirage
             }
 
             var behaviours = identity.NetworkBehaviours;
-            for (var i = 0; i < behaviours.Count; i++)
+            for (var i = 0; i < behaviours.Length; i++)
             {
                 var comp = behaviours[i];
                 // check if any sync setting have to.server 

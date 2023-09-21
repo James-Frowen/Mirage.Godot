@@ -1,5 +1,4 @@
 using Godot;
-using Mirage;
 using Mirage.Logging;
 using Mirage.SocketLayer;
 
@@ -7,23 +6,24 @@ namespace Mirage
 {
     public partial class NetworkManager : Node
     {
+        [ExportGroup("Server")]
+        [Export] public NetworkServer Server;
+        [Export] public ServerObjectManager ServerObjectManager;
+        [Export] public int MaxConnections;
+
+        [ExportGroup("Client")]
+        [Export] public NetworkClient Client;
+        [Export] public ClientObjectManager ClientObjectManager;
+
+        [ExportGroup("Shared")]
         [Export] public SocketFactory SocketFactory;
         [Export] public bool EnableAllLogs;
-        [Export] public PackedScene[] PackedScenes;
-
-        [ExportGroup("Settings")]
-        [Export] public bool DisconnectOnException;
-
-        public NetworkServer Server { get; private set; }
-        public NetworkClient Client { get; private set; }
-
+        [Export] public NetworkScene NetworkScene;
 
         public NetworkManager()
         {
             LogFactory.ReplaceLogHandler(new GodotLogger(), true);
             GeneratedCode.Init();
-            Server = new NetworkServer();
-            Client = new NetworkClient(this);
         }
 
         // Called when the node enters the scene tree for the first time.
@@ -34,28 +34,43 @@ namespace Mirage
                 LogFactory.SetDefaultLogLevel(LogType.Log, true);
                 LogFactory.GetLogger<Peer>().filterLogType = LogType.Warning;
             }
-
-            Server.Setup(disconnectOnException: DisconnectOnException);
-            Client.Setup(disconnectOnException: DisconnectOnException);
-
-            // todo find way to have list of prefabs, and then get NetworkNode in that prefab
-            //foreach (var prefab in Prefabs)
-            //{
-            //    prefab.Prepare(true);
-            //}
-            //Client.RegisterPrefabs(Prefabs, false);
         }
 
         public void StartServer()
         {
-            GD.Print("StartUDPServer");
-            Server.StartServer(SocketFactory);
+            GD.Print("Starting Server Mode");
+            // dont create a new peer config if we have already dont it somewhere else
+            if (Server.PeerConfig == null)
+            {
+                // set MaxConnections
+                Server.PeerConfig = new Config
+                {
+                    MaxConnections = MaxConnections,
+                };
+            }
+            Server.StartServer();
+            ClientObjectManager.PrepareToSpawnSceneObjects();
         }
 
         public void StartClient()
         {
-            GD.Print("StartUDPClient");
-            Client.Connect(SocketFactory);
+            GD.Print("Starting Client Mode");
+            Client.Connect();
+        }
+
+        public void StartHost()
+        {
+            GD.Print("Starting Host Mode");
+            // dont create a new peer config if we have already dont it somewhere else
+            if (Server.PeerConfig == null)
+            {
+                // set MaxConnections
+                Server.PeerConfig = new Config
+                {
+                    MaxConnections = MaxConnections,
+                };
+            }
+            Server.StartServer(Client);
         }
 
         public void Stop()

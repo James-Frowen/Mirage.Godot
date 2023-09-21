@@ -124,14 +124,10 @@ namespace Mirage.Weaver
         private static void GenerateSyncObjectRegistration(ILProcessor worker, FieldDefinition fd)
         {
             worker.Append(worker.Create(OpCodes.Ldarg_0));
-            worker.Append(worker.Create(OpCodes.Callvirt, (INetworkNode nb) => nb.Identity));
-
-            worker.Append(worker.Create(OpCodes.Ldarg_0));
-
             worker.Append(worker.Create(OpCodes.Ldarg_0));
             worker.Append(worker.Create(OpCodes.Ldfld, fd));
 
-            worker.Append(worker.Create(OpCodes.Callvirt, (NetworkIdentity ni) => ni.InitSyncObject(default, default)));
+            worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.InitSyncObject(default, default)));
         }
     }
 }

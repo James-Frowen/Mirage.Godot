@@ -16,7 +16,7 @@ namespace Mirage.RemoteCalls
         /// <summary>
         /// Object locator required for deserializing the reply
         /// </summary>
-        private readonly IObjectLocator<NetworkIdentity> _objectLocator;
+        private readonly IObjectLocator _objectLocator;
         /// <summary>
         /// Invoke type for validation
         /// </summary>
@@ -28,7 +28,7 @@ namespace Mirage.RemoteCalls
             messageHandler.RegisterHandler<RpcMessage>(OnRpcMessage);
             messageHandler.RegisterHandler<RpcWithReplyMessage>(OnRpcWithReplyMessage);
 
-            _objectLocator = (IObjectLocator<NetworkIdentity>)objectLocator;
+            _objectLocator = (IObjectLocator)objectLocator;
             _invokeType = invokeType;
         }
 
@@ -37,18 +37,18 @@ namespace Mirage.RemoteCalls
         /// </summary>
         /// <param name="player"></param>
         /// <param name="msg"></param>
-        private void OnRpcWithReplyMessage(INetworkPlayer player, RpcWithReplyMessage msg)
+        private void OnRpcWithReplyMessage(NetworkPlayer player, RpcWithReplyMessage msg)
         {
             HandleRpc(player, msg.NetId, msg.FunctionIndex, msg.Payload, msg.ReplyId);
         }
 
-        internal void OnRpcMessage(INetworkPlayer player, RpcMessage msg)
+        internal void OnRpcMessage(NetworkPlayer player, RpcMessage msg)
         {
             HandleRpc(player, msg.NetId, msg.FunctionIndex, msg.Payload, default);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void HandleRpc(INetworkPlayer player, uint netId, int functionIndex, ArraySegment<byte> payload, int replyId)
+        private void HandleRpc(NetworkPlayer player, uint netId, int functionIndex, ArraySegment<byte> payload, int replyId)
         {
             if (!_objectLocator.TryGetIdentity(netId, out var identity))
             {
@@ -77,7 +77,7 @@ namespace Mirage.RemoteCalls
             }
         }
 
-        private bool CheckAuthority(RemoteCall remoteCall, NetworkIdentity identity, INetworkPlayer player)
+        private bool CheckAuthority(RemoteCall remoteCall, NetworkIdentity identity, NetworkPlayer player)
         {
             // not required, return ok
             if (!remoteCall.RequireAuthority)
@@ -116,7 +116,7 @@ namespace Mirage.RemoteCalls
             return (completionSource.Task, newReplyId);
         }
 
-        private void OnReply(INetworkPlayer player, RpcReply reply)
+        private void OnReply(NetworkPlayer player, RpcReply reply)
         {
             // find the callback that was waiting for this and invoke it.
             if (_callbacks.TryGetValue(reply.ReplyId, out var action))

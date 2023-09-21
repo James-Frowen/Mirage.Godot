@@ -39,7 +39,17 @@ namespace Mirage
         private double _offsetMin = double.MinValue;
         private double _offsetMax = double.MaxValue;
 
-        private double LocalTime() => _stopwatch.ElapsedMilliseconds / 1000.0;
+        /// <summary>
+        /// Time at the start of the frame
+        /// </summary>
+        public float LocalFrameTime { get; private set; }
+        public double LocalFrameTimeAsDouble { get; private set; }
+
+        /// <summary>
+        /// Note: local and sever time may be very differerent because they are based off when each instance was started
+        /// </summary>
+        /// <returns></returns>
+        public double LocalTime() => _stopwatch.ElapsedMilliseconds / 1000.0;
 
         public void Reset()
         {
@@ -49,6 +59,11 @@ namespace Mirage
             _offsetMax = double.MaxValue;
         }
 
+        internal void UpdateFrameTime()
+        {
+            LocalFrameTimeAsDouble = LocalTime();
+            LocalFrameTime = (float)LocalFrameTimeAsDouble;
+        }
         internal void UpdateClient(IMessageSender client)
         {
             var now = LocalTime();
@@ -66,7 +81,7 @@ namespace Mirage
         // executed at the server when we receive a ping message
         // reply with a pong containing the time from the client
         // and time from the server
-        internal void OnServerPing(INetworkPlayer player, NetworkPingMessage msg)
+        internal void OnServerPing(NetworkPlayer player, NetworkPingMessage msg)
         {
             if (logger.LogEnabled()) logger.Log("OnPingServerMessage  conn=" + player);
 
@@ -142,7 +157,7 @@ namespace Mirage
         /// <para>in other words,  if the server is running for 2 months,
         /// and you cast down to float,  then the time will jump in 0.4s intervals.</para>
         /// </remarks>
-        public double Time
+        public double ServerTime
         {
             get
             {

@@ -174,11 +174,10 @@ namespace Mirage.Weaver
                 // if param is network player, use Server's Local player instead
                 //   in host mode this will be the Server's copy of the the player,
                 //   in server mode this will be null
-                if (param.ParameterType.Implements<INetworkPlayer>())
+                if (param.ParameterType.Implements<NetworkPlayer>())
                 {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.Server));
-                    worker.Append(worker.Create(OpCodes.Callvirt, (NetworkServer server) => server.LocalPlayer));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.GetServerLocalPlayer(default)));
                 }
                 else
                 {

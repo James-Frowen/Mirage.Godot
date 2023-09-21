@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Mirage;
 using Mirage.Logging;
 
 namespace Mirage
@@ -11,13 +10,13 @@ namespace Mirage
     /// </summary>
     /// <param name="hasAuthority">if the owner now has authority or if it was removed</param>
     /// <param name="owner">the new or old owner. Owner value might be null on client side. But will be set on server</param>
-    public delegate void AuthorityChanged(NetworkIdentity identity, bool hasAuthority, INetworkPlayer owner);
+    public delegate void AuthorityChanged(NetworkIdentity identity, bool hasAuthority, NetworkPlayer owner);
 
     /// <summary>
     /// Holds collection of spawned network objects
     /// <para>This class works on both server and client</para>
     /// </summary>
-    public class NetworkWorld : IObjectLocator<NetworkIdentity>
+    public class NetworkWorld : IObjectLocator
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkWorld>();
 
@@ -47,7 +46,7 @@ namespace Mirage
         private readonly Dictionary<uint, NetworkIdentity> _spawnedObjects = new Dictionary<uint, NetworkIdentity>();
         public IReadOnlyCollection<NetworkIdentity> SpawnedIdentities => _spawnedObjects.Values;
 
-        bool IObjectLocator.TryGetIdentity(uint netId, out object identity)
+        bool IObjectLocator.TryGetIdentity(uint netId, out NetworkIdentity identity)
         {
             if (TryGetIdentity(netId, out var networkNode))
             {
@@ -140,7 +139,7 @@ namespace Mirage
             _spawnedObjects.Clear();
         }
 
-        internal void InvokeOnAuthorityChanged(NetworkIdentity identity, bool hasAuthority, INetworkPlayer owner)
+        internal void InvokeOnAuthorityChanged(NetworkIdentity identity, bool hasAuthority, NetworkPlayer owner)
         {
             OnAuthorityChanged?.Invoke(identity, hasAuthority, owner);
         }

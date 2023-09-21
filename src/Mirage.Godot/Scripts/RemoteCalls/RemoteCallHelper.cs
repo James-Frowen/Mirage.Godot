@@ -6,21 +6,6 @@ using Mirage.Serialization;
 
 namespace Mirage.RemoteCalls
 {
-    public static class TaskHelper
-    {
-        private static readonly ILogger logger = LogFactory.GetLogger(typeof(TaskHelper));
-        public static async void Forget(this Task task)
-        {
-            try
-            {
-                await task;
-            }
-            catch (Exception e)
-            {
-                logger.LogException(e);
-            }
-        }
-    }
     public class RemoteCallCollection
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(RemoteCallCollection));
@@ -78,7 +63,7 @@ namespace Mirage.RemoteCalls
 
         public void RegisterRequest<T>(int index, string name, bool cmdRequireAuthority, RpcInvokeType invokerType, INetworkNode behaviour, RequestDelegate<T> func)
         {
-            async Task Wrapper(INetworkNode obj, NetworkReader reader, INetworkPlayer senderPlayer, int replyId)
+            async Task Wrapper(INetworkNode obj, NetworkReader reader, NetworkPlayer senderPlayer, int replyId)
             {
                 /// invoke the serverRpc and send a reply message
                 var result = await func(obj, reader, senderPlayer, replyId);
@@ -96,7 +81,7 @@ namespace Mirage.RemoteCalls
                 }
             }
 
-            void CmdWrapper(INetworkNode obj, NetworkReader reader, INetworkPlayer senderPlayer, int replyId)
+            void CmdWrapper(INetworkNode obj, NetworkReader reader, NetworkPlayer senderPlayer, int replyId)
             {
                 Wrapper(obj, reader, senderPlayer, replyId).Forget();
             }
@@ -127,8 +112,8 @@ namespace Mirage.RemoteCalls
     /// </summary>
     /// <param name="obj"></param>
     /// <param name="reader"></param>
-    public delegate void RpcDelegate(INetworkNode obj, NetworkReader reader, INetworkPlayer senderPlayer, int replyId);
-    public delegate Task<T> RequestDelegate<T>(INetworkNode obj, NetworkReader reader, INetworkPlayer senderPlayer, int replyId);
+    public delegate void RpcDelegate(INetworkNode obj, NetworkReader reader, NetworkPlayer senderPlayer, int replyId);
+    public delegate Task<T> RequestDelegate<T>(INetworkNode obj, NetworkReader reader, NetworkPlayer senderPlayer, int replyId);
 
     // invoke type for Rpc
     public enum RpcInvokeType
@@ -174,7 +159,7 @@ namespace Mirage.RemoteCalls
             Name = name;
         }
 
-        internal void Invoke(NetworkReader reader, INetworkPlayer senderPlayer = null, int replyId = 0)
+        internal void Invoke(NetworkReader reader, NetworkPlayer senderPlayer = null, int replyId = 0)
         {
             Function(Behaviour, reader, senderPlayer, replyId);
         }

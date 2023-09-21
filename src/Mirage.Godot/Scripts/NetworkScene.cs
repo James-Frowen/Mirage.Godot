@@ -4,25 +4,16 @@ namespace Mirage
 {
     public partial class NetworkScene : Node
     {
-        [Export] private NetworkIdentity[] SceneObjects;
+        [Export] private NetworkIdentity[] _sceneObjects;
 
-        public void SpawnSceneObjects(NetworkServer server)
+        public override void _Ready()
         {
-            // todo add Spawn Many function
-            foreach (var obj in SceneObjects)
+            foreach (var identity in _sceneObjects)
             {
-                server.Spawn(obj);
+                var (sceneHash, prefabHash) = PrefabHashHelper.GetSceneHash(identity);
+                identity.PrefabHash = prefabHash;
+                identity.SceneHash = sceneHash;
             }
-        }
-
-        public void PrepareSceneObjects(NetworkClient client)
-        {
-            foreach (var obj in SceneObjects)
-            {
-                obj.Prepare(false);
-            }
-
-            client.RegisterPrefabs(SceneObjects, false);
         }
     }
 }

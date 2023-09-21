@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using Godot;
-using Mirage;
 
 namespace Mirage.Messages
 {
@@ -10,13 +9,15 @@ namespace Mirage.Messages
     {
         public uint NetId;
         public bool IsOwner;
-        public int SpawnHash;
+        public bool IsMainCharacter;
+        public int PrefabHash;
+        public int? SceneHash;
         public SpawnValues SpawnValues;
         public ArraySegment<byte> Payload;
 
         public override string ToString()
         {
-            return $"SpawnMessage[NetId:{NetId},SpawnHash:{SpawnHash:X},IsOwner:{IsOwner},{SpawnValues},Payload:{Payload.Count}bytes]";
+            return $"SpawnMessage[NetId:{NetId},PrefabHash:{PrefabHash:X},IsOwner:{IsOwner},{SpawnValues},Payload:{Payload.Count}bytes]";
         }
     }
 
@@ -24,7 +25,8 @@ namespace Mirage.Messages
     {
         public Vector3? Position;
         public Quaternion? Rotation;
-        public Vector3? Scale;
+        public Vector2? Position2d;
+        public float? Rotation2d;
         public string Name;
         public bool? SelfActive;
 
@@ -46,9 +48,6 @@ namespace Mirage.Messages
 
             if (Rotation.HasValue)
                 Append(ref first, $"Rotation={Rotation.Value}");
-
-            if (Scale.HasValue)
-                Append(ref first, $"Scale={Scale.Value}");
 
             if (!string.IsNullOrEmpty(Name))
                 Append(ref first, $"Name={Name}");

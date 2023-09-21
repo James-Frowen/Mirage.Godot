@@ -1,23 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Godot;
 using Mirage.Logging;
 
 namespace Mirage.Authentication
 {
-    public sealed class AuthenticatorSettings : MonoBehaviour
+    public sealed partial class AuthenticatorSettings : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger<AuthenticatorSettings>();
 
+        [Export]
         public int TimeoutSeconds = 60;
 
-        [Tooltip("Should the host player authenticate? If this is false then they will be marked as Authenticated automatically without going through a NetworkAuthenticator")]
+        [Export(hintString: "Should the host player authenticate? If this is false then they will be marked as Authenticated automatically without going through a NetworkAuthenticator")]
         public bool RequireHostToAuthenticate;
 
-        [Tooltip("List of Authenticators allowed, User can use any of them")]
-        public List<NetworkAuthenticator> Authenticators = new List<NetworkAuthenticator>();
+        [Export(hintString: "List of Authenticators allowed, User can use any of them")]
+        public NetworkAuthenticator[] Authenticators = new NetworkAuthenticator[0];
 
-        private readonly Dictionary<INetworkPlayer, TaskCompletionSource<AuthenticationResult>> _pending = new Dictionary<INetworkPlayer, TaskCompletionSource<AuthenticationResult>>();
+        private readonly Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>> _pending = new Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>>();
 
         private MessageHandler _authHandler;
         private NetworkServer _server;
@@ -34,7 +36,7 @@ namespace Mirage.Authentication
             // this is needed because message are wrapped inside AuthMessage
             _authHandler = new MessageHandler(null, true, _server.RethrowException);
 
-            server.Disconnected.AddListener(ServerDisconnected);
+            server.Disconnected += ServerDisconnected;
 
             foreach (var authenticator in Authenticators)
             {
@@ -42,12 +44,12 @@ namespace Mirage.Authentication
             }
         }
 
-        private void HandleAuthMessage(INetworkPlayer player, AuthMessage authMessage)
+        private void HandleAuthMessage(NetworkPlayer player, AuthMessage authMessage)
         {
             _authHandler.HandleMessage(player, authMessage.Payload);
         }
 
-        private void ServerDisconnected(INetworkPlayer player)
+        private void ServerDisconnected(NetworkPlayer player)
         {
             // if player is pending, then set their result to fail
             if (_pending.TryGetValue(player, out var taskCompletion))
@@ -56,7 +58,7 @@ namespace Mirage.Authentication
             }
         }
 
-        public async Task<AuthenticationResult> ServerAuthenticate(INetworkPlayer player)
+        public async Task<AuthenticationResult> ServerAuthenticate(NetworkPlayer player)
         {
             if (SkipHost(player))
                 return AuthenticationResult.CreateSuccess("Host player");
@@ -75,7 +77,7 @@ namespace Mirage.Authentication
             return result;
         }
 
-        private bool SkipHost(INetworkPlayer player)
+        private bool SkipHost(NetworkPlayer player)
         {
             var isHost = player == _server.LocalPlayer;
 
@@ -86,7 +88,7 @@ namespace Mirage.Authentication
             return skip;
         }
 
-        private async Task<AuthenticationResult> RunServerAuthenticate(INetworkPlayer player)
+        private async Task<AuthenticationResult> RunServerAuthenticate(NetworkPlayer player)
         {
             TaskCompletionSource<AuthenticationResult> taskCompletion;
             // host player should be added by PreAddHostPlayer, so we just get item
@@ -129,7 +131,7 @@ namespace Mirage.Authentication
             }
         }
 
-        internal void AfterAuth(INetworkPlayer player, AuthenticationResult result)
+        internal void AfterAuth(NetworkPlayer player, AuthenticationResult result)
         {
             if (_pending.TryGetValue(player, out var taskCompletion))
             {
@@ -141,7 +143,7 @@ namespace Mirage.Authentication
             }
         }
 
-        internal void PreAddHostPlayer(INetworkPlayer player)
+        internal void PreAddHostPlayer(NetworkPlayer player)
         {
             // dont add if host dont require auth
             if (!RequireHostToAuthenticate)

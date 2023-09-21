@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Godot;
 using Mirage.Serialization;
-using UnityEngine;
 
 namespace Mirage.Authentication
 {
@@ -10,24 +10,24 @@ namespace Mirage.Authentication
         string AuthenticatorName { get; }
     }
 
-    public abstract class NetworkAuthenticator : MonoBehaviour, INetworkAuthenticator
+    public abstract partial class NetworkAuthenticator : Node, INetworkAuthenticator
     {
         public virtual string AuthenticatorName => GetType().Name;
 
-        internal abstract void Setup(MessageHandler messageHandler, Action<INetworkPlayer, AuthenticationResult> afterAuth);
+        internal abstract void Setup(MessageHandler messageHandler, Action<NetworkPlayer, AuthenticationResult> afterAuth);
     }
 
-    public abstract class NetworkAuthenticator<T> : NetworkAuthenticator, INetworkAuthenticator
+    public abstract partial class NetworkAuthenticator<T> : NetworkAuthenticator, INetworkAuthenticator
     {
-        private Action<INetworkPlayer, AuthenticationResult> _afterAuth;
+        private Action<NetworkPlayer, AuthenticationResult> _afterAuth;
 
-        internal sealed override void Setup(MessageHandler messageHandler, Action<INetworkPlayer, AuthenticationResult> afterAuth)
+        internal sealed override void Setup(MessageHandler messageHandler, Action<NetworkPlayer, AuthenticationResult> afterAuth)
         {
             messageHandler.RegisterHandler<T>(HandleAuth, allowUnauthenticated: true);
             _afterAuth = afterAuth;
         }
 
-        private async Task HandleAuth(INetworkPlayer player, T msg)
+        private async Task HandleAuth(NetworkPlayer player, T msg)
         {
             var result = await AuthenticateAsync(player, msg);
             _afterAuth.Invoke(player, result);
@@ -43,9 +43,9 @@ namespace Mirage.Authentication
         /// <param name="player">player that send message</param>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected internal virtual UniTask<AuthenticationResult> AuthenticateAsync(INetworkPlayer player, T message)
+        protected internal virtual Task<AuthenticationResult> AuthenticateAsync(NetworkPlayer player, T message)
         {
-            return UniTask.FromResult(Authenticate(player, message));
+            return Task.FromResult(Authenticate(player, message));
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Mirage.Authentication
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected virtual AuthenticationResult Authenticate(INetworkPlayer player, T message) => throw new NotImplementedException("You must Implement Authenticate or AuthenticateAsync");
+        protected virtual AuthenticationResult Authenticate(NetworkPlayer player, T message) => throw new NotImplementedException("You must Implement Authenticate or AuthenticateAsync");
 
         /// <summary>
         /// Sends Authentication from client

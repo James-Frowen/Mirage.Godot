@@ -40,7 +40,7 @@ namespace Mirage
 
         private static NetworkMessageDelegate MessageWrapper<T>(MessageDelegateWithPlayer<T> handler)
         {
-            void AdapterFunction(INetworkPlayer player, NetworkReader reader)
+            void AdapterFunction(NetworkPlayer player, NetworkReader reader)
             {
                 var message = NetworkDiagnostics.ReadWithDiagnostics<T>(reader);
 
@@ -70,7 +70,7 @@ namespace Mirage
             _messageHandlers.Clear();
         }
 
-        public void HandleMessage(INetworkPlayer player, ArraySegment<byte> packet)
+        public void HandleMessage(NetworkPlayer player, ArraySegment<byte> packet)
         {
             using (var networkReader = NetworkReaderPool.GetReader(packet, _objectLocator))
             {
@@ -102,7 +102,7 @@ namespace Mirage
             }
         }
 
-        public void LogAndCheckDisconnect(INetworkPlayer player, Exception e)
+        public void LogAndCheckDisconnect(NetworkPlayer player, Exception e)
         {
             var disconnectMessage = _disconnectOnException ? $", Closed connection: {player}" : "";
             logger.LogError($"{e.GetType()} in Message handler (see stack below){disconnectMessage}\n{e}");
@@ -112,7 +112,7 @@ namespace Mirage
             }
         }
 
-        internal void InvokeHandler(INetworkPlayer player, int msgType, NetworkReader reader)
+        internal void InvokeHandler(NetworkPlayer player, int msgType, NetworkReader reader)
         {
             if (_messageHandlers.TryGetValue(msgType, out var handler))
             {
@@ -135,7 +135,7 @@ namespace Mirage
             }
         }
 
-        private bool CheckAuthenticaiton(INetworkPlayer player, int msgType, Handler handler)
+        private bool CheckAuthenticaiton(NetworkPlayer player, int msgType, Handler handler)
         {
             // always allowed
             if (handler.AllowUnauthenticated)
@@ -168,7 +168,7 @@ namespace Mirage
         /// </summary>
         /// <param name="player"></param>
         /// <param name="reader"></param>
-        internal delegate void NetworkMessageDelegate(INetworkPlayer player, NetworkReader reader);
+        internal delegate void NetworkMessageDelegate(NetworkPlayer player, NetworkReader reader);
 
         internal class Handler
         {

@@ -35,7 +35,7 @@ namespace Mirage.RemoteCalls
                 Payload = writer.ToArraySegment()
             };
 
-            (var task, var id) = behaviour.Identity.Client._rpcHandler.CreateReplyTask<T>();
+            (var task, var id) = behaviour.Identity.ClientObjectManager._rpcHandler.CreateReplyTask<T>();
 
             message.ReplyId = id;
 
