@@ -66,10 +66,12 @@ namespace Mirage.Weaver
                 var weaver = new Weaver(weaverLogger);
                 var result = weaver.Process(compiledAssembly, hints.ToArray());
 
-                Write(result, dllPath, compiledAssembly.PdbPath);
+                if (result.Type == ResultType.Success)
+                {
+                    Write(result, dllPath, compiledAssembly.PdbPath);
+                }
 
-                var exitCode = CheckDiagnostics(weaverLogger);
-                Environment.ExitCode = 0;
+                Environment.ExitCode = CheckDiagnostics(result.ILPostProcessResult.Diagnostics);
             }
             catch (Exception e)
             {
@@ -79,9 +81,8 @@ namespace Mirage.Weaver
             }
         }
 
-        private static int CheckDiagnostics(WeaverLogger weaverLogger)
+        private static int CheckDiagnostics(List<DiagnosticMessage> diagnostics)
         {
-            var diagnostics = weaverLogger.GetDiagnostics();
             var exitCode = 0;
             foreach (var message in diagnostics)
             {
