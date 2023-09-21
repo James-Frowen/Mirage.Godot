@@ -17,6 +17,7 @@ namespace Mirage
 
         public const int COMPONENT_INDEX_NOT_FOUND = -1;
 
+        [ExportGroup("Sync Settings")]
         [Export] public SyncFrom From;
         [Export] public SyncTo To;
         [Export] public SyncTiming Timing;

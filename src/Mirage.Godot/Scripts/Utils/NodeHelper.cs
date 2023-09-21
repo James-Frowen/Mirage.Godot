@@ -7,6 +7,16 @@ namespace Mirage
 {
     internal static class NodeHelper
     {
+        /// <summary>
+        /// Gets NetworkIdentity in first level of child
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public static NetworkIdentity GetNetworkIdentity(this Node node)
+        {
+            return node.GetChildren().OfType<NetworkIdentity>().First();
+        }
         public static T GetComponent<T>(this Node node)
         {
             return node.GetParent().GetChildren().OfType<T>().FirstOrDefault();

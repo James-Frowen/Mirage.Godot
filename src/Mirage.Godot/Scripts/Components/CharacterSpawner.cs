@@ -1,5 +1,4 @@
-﻿using Godot;
-using Mirage;
+using Godot;
 
 namespace Mirage
 {
@@ -7,24 +6,23 @@ namespace Mirage
     {
         [Export] private NetworkManager _networkManager;
         [Export] private bool _spawnOnConnect;
+        [Export] private PackedScene _player;
 
         public override void _Ready()
         {
-            _networkManager.Server.Connected += Server_Connected;
+            _networkManager.Server.Authenticated += Server_Authenticated;
         }
 
-        private void Server_Connected(NetworkPlayer obj)
+        private void Server_Authenticated(NetworkPlayer player)
         {
             if (_spawnOnConnect)
             {
+                var clone = _player.Instantiate();
+                GetTree().Root.AddChild(clone);
 
+                var identity = clone.GetNetworkIdentity();
+                _networkManager.ServerObjectManager.AddCharacter(player, identity);
             }
-        }
-
-        public void SpawnCharacter()
-        {
-            // todo create character, and add to player
-            //_networkManager.Server.Spawn();
         }
     }
 }

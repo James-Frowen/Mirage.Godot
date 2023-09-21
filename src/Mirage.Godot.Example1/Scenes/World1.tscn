@@ -1,7 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://c6ligiar3siat"]
+[gd_scene load_steps=14 format=3 uid="uid://c6ligiar3siat"]
 
 [ext_resource type="PackedScene" uid="uid://nea4bwm2wwpj" path="res://Prefabs/Player.tscn" id="2_04pam"]
-[ext_resource type="PackedScene" uid="uid://qdcidrs5qnt8" path="res://Prefabs/network_manager.tscn" id="2_die1l"]
+[ext_resource type="PackedScene" uid="uid://miuh5bbud7ui" path="res://Prefabs/network_manager.tscn" id="2_die1l"]
+[ext_resource type="Script" path="res://Mirage.Godot/Components/CharacterSpawner.cs" id="2_pnjea"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkScene.cs" id="3_cn7xa"]
 [ext_resource type="Script" path="res://Scripts/FollowTarget.cs" id="3_qofg0"]
 [ext_resource type="Script" path="res://Scripts/FollowLocalPlayer.cs" id="4_xs4pi"]
 [ext_resource type="Script" path="res://Scripts/MobSpawner.cs" id="5_pft5t"]
@@ -31,8 +33,20 @@ point_count = 5
 
 [node name="Main" type="Node3D"]
 
-[node name="NetworkManager" parent="." instance=ExtResource("2_die1l")]
-PackedScenes = Array[PackedScene]([ExtResource("2_04pam"), ExtResource("6_ro56k")])
+[node name="NetworkManager" parent="." node_paths=PackedStringArray("ServerObjectManager", "ClientObjectManager", "SocketFactory") instance=ExtResource("2_die1l")]
+ServerObjectManager = NodePath("")
+ClientObjectManager = NodePath("")
+SocketFactory = NodePath("")
+
+[node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_networkManager")]
+script = ExtResource("2_pnjea")
+_networkManager = NodePath("..")
+_spawnOnConnect = true
+_player = ExtResource("2_04pam")
+
+[node name="NetworkScene" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_sceneObjects")]
+script = ExtResource("3_cn7xa")
+_sceneObjects = []
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -46,8 +60,6 @@ mesh = SubResource("BoxMesh_3dbji")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, -0.75, 0.433013, 0, 0, 0)
 
-[node name="Player" parent="." instance=ExtResource("2_04pam")]
-
 [node name="CameraPivot" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0)
 
@@ -58,7 +70,7 @@ size = 19.0
 
 [node name="FollowTarget" type="Node" parent="CameraPivot" node_paths=PackedStringArray("Target")]
 script = ExtResource("3_qofg0")
-Target = NodePath("../../Player")
+Target = NodePath("")
 
 [node name="FollowLocalPlayer" type="Node" parent="CameraPivot/FollowTarget" node_paths=PackedStringArray("_networkManager", "_followTarget")]
 script = ExtResource("4_xs4pi")
@@ -94,7 +106,7 @@ script = ExtResource("5_pft5t")
 Path = NodePath("..")
 Location = NodePath("../SpawnLocation")
 MobScene = ExtResource("6_ro56k")
-Target = NodePath("../../Player")
+Target = NodePath("")
 
 [node name="ModTimer" type="Timer" parent="SpawnPath/Spawner"]
 wait_time = 0.5
