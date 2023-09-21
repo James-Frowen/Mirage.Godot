@@ -12,6 +12,12 @@ namespace Mirage.Weaver
         public Dictionary<FieldReference, MethodDefinition> Setters = new Dictionary<FieldReference, MethodDefinition>(new FieldReferenceComparator());
         // getter functions that replace [SyncVar] member variable references. dict<field, replacement>
         public Dictionary<FieldReference, MethodDefinition> Getters = new Dictionary<FieldReference, MethodDefinition>(new FieldReferenceComparator());
+        private readonly IWeaverLogger _logger;
+
+        public PropertySiteProcessor(IWeaverLogger logger)
+        {
+            _logger = logger;
+        }
 
         public void Process(ModuleDefinition moduleDef)
         {
@@ -86,7 +92,13 @@ namespace Mirage.Weaver
                 FieldReference resolved = opFieldld.Resolve();
                 if (resolved == null)
                 {
-                    resolved = opFieldld.DeclaringType.Resolve().GetField(opFieldld.Name);
+                    var resolvedType = opFieldld.DeclaringType.Resolve();
+                    if (resolvedType == null)
+                    {
+                        _logger.Warning($"Failed to resolve {opFieldld.FullName}", opFieldld);
+                        return instr;
+                    }
+                    resolved = resolvedType.GetField(opFieldld.Name);
                 }
 
                 // this instruction gets the value of a field. cache the field reference.
@@ -98,7 +110,13 @@ namespace Mirage.Weaver
                 FieldReference resolved = opFieldlda.Resolve();
                 if (resolved == null)
                 {
-                    resolved = opFieldlda.DeclaringType.Resolve().GetField(opFieldlda.Name);
+                    var resolvedType = opFieldlda.DeclaringType.Resolve();
+                    if (resolvedType == null)
+                    {
+                        _logger.Warning($"Failed to resolve {opFieldlda.FullName}", opFieldlda);
+                        return instr;
+                    }
+                    resolved = resolvedType.GetField(opFieldlda.Name);
                 }
 
                 // loading a field by reference,  watch out for initobj instruction

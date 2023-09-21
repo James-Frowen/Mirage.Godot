@@ -43,7 +43,7 @@ namespace Mirage.Weaver
                 var module = assembly.MainModule;
                 readers = new Readers(module, logger);
                 writers = new Writers(module, logger);
-                propertySiteProcessor = new PropertySiteProcessor();
+                propertySiteProcessor = new PropertySiteProcessor(logger);
                 var rwProcessor = new ReaderWriterProcessor(module, readers, writers, logger);
 
                 var modified = false;
