@@ -61,7 +61,8 @@ namespace Mirage.CodeGen
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
-            if (name.Name == _compiledAssembly.Name)
+            // todo add flag for "Mirage.godot" check instead of always doing it
+            if (name.Name == _compiledAssembly.Name || name.Name == "Mirage.godot")
                 return _selfAssembly;
 
             if (!TryFindFile(name.Name, out var fileName))
