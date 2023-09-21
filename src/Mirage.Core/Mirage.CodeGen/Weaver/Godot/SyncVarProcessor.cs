@@ -239,7 +239,7 @@ namespace Mirage.Weaver
                 if (syncVar.InvokeHookOnOwner)
                 {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.HasAuthorityMethod()));
+                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.HasAuthority()));
                     // if true, go to start of if
                     // this will act as an OR for the IsServer check
                     worker.Append(worker.Create(OpCodes.Brtrue, startIf));
@@ -248,9 +248,9 @@ namespace Mirage.Weaver
                 worker.Append(worker.Create(OpCodes.Ldarg_0));
                 if (syncVar.InvokeHookOnServer)
                     // if invokeOnServer, then `IsServer` will also cover the Host case too so we dont need to use an OR here
-                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.IsServerMethod()));
+                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.IsServer()));
                 else
-                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.IsMainCharacterMethod()));
+                    worker.Append(worker.Create(OpCodes.Call, (NetworkBehaviour nb) => nb.IsMainCharacter()));
                 worker.Append(worker.Create(OpCodes.Brfalse, afterIf));
 
 
@@ -676,7 +676,7 @@ namespace Mirage.Weaver
                 if (!syncVar.InvokeHookOnServer)
                 {
                     worker.Append(worker.Create(OpCodes.Ldarg_0));
-                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.IsServerMethod(default)));
+                    worker.Append(worker.Create(OpCodes.Call, () => NetworkNodeExtensinos.IsServer(default)));
                     // if true, go to start of if
                     // this will act as an OR for the IsServer check
                     worker.Append(worker.Create(OpCodes.Brtrue, endHookInvoke));

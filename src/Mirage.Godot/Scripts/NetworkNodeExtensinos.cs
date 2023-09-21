@@ -9,10 +9,10 @@ namespace Mirage
     public static class NetworkNodeExtensinos
     {
         // todo decide which of these should be extension methods vs static only
-        public static bool IsServerMethod(this INetworkNode node) => node.Identity.IsServer;
-        public static bool IsClientMethod(this INetworkNode node) => node.Identity.IsClient;
-        public static bool HasAuthorityMethod(this INetworkNode node) => node.Identity.HasAuthority;
-        public static bool IsMainCharacterMethod(this INetworkNode node) => node.Identity.IsMainCharacter;
+        public static bool IsServer(this INetworkNode node) => node.Identity.IsServer;
+        public static bool IsClient(this INetworkNode node) => node.Identity.IsClient;
+        public static bool HasAuthority(this INetworkNode node) => node.Identity.HasAuthority;
+        public static bool IsMainCharacter(this INetworkNode node) => node.Identity.IsMainCharacter;
 
         public static NetworkServer ServerMethod(this INetworkNode node) => node.Identity.Server;
         public static NetworkClient ClientMethod(this INetworkNode node) => node.Identity.Client;
