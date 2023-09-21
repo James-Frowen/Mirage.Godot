@@ -1,6 +1,5 @@
 using Godot;
 using Mirage;
-using MirageGodot;
 
 namespace Example1
 {
@@ -21,10 +20,10 @@ namespace Example1
             _networkManager.Server.SendToAll(new A
             {
                 B = "Test"
-            });
+            }, excludeLocalPlayer: false);
         }
 
-        private void World_onSpawn(NetworkNode obj)
+        private void World_onSpawn(NetworkIdentity obj)
         {
             // already set, dont need to set again
             if (_followTarget.Target != null)

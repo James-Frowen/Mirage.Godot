@@ -11,20 +11,27 @@ namespace Mirage.Weaver
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main(string[] argsArray)
         {
             try
             {
+                var args = new List<string>(argsArray);
+                //Console.WriteLine($"ONE-LINE ARGS={string.Join(' ', argsArray.Select(x => $"\"{x}\""))}");
+
                 Console.WriteLine("Mirage Weaver start");
+
+                var force = args.Contains("-force");
+                // remove any flags, first arg should be dll path
+                args.RemoveAll(x => x.StartsWith("-"));
 
                 // This is to prevent an array out of bounds exception
                 // if you're double clicking or running it without any arguments.
-                if (args.Length == 0)
+                if (args.Count == 0)
                 {
                     // Environment.ExitCode = 1;
                     Console.Error.WriteLine("ERROR: Mirage CodeGen cannot be run without any arguments!");
-                    Console.WriteLine("Usage: Mirage.CodeGen.exe <path to application DLL>");
-                    Console.WriteLine("Example: Mirage.CodeGen.exe D:\\Dev\\CoolApp\\MyMirageApp.dll");
+                    Console.WriteLine("Usage: Mirage.CodeGen.exe <path to application DLL> [hint paths...] [-force]");
+                    Console.WriteLine("Example: Mirage.CodeGen.exe D:\\Dev\\CoolApp\\MyMirageApp.dll -force");
                     Environment.Exit(1);
                 }
 
@@ -32,7 +39,7 @@ namespace Mirage.Weaver
                 Console.WriteLine($"Weaver target: {dllPath}");
                 var hints = new List<string>();
                 hints.Add(Path.GetDirectoryName(dllPath));
-                for (var i = 1; i < args.Length; i++)
+                for (var i = 1; i < args.Count; i++)
                 {
                     hints.Add(args[i]);
                 }
@@ -46,8 +53,8 @@ namespace Mirage.Weaver
                 // TODO: use proper Assembly paths
                 // todo move this to PostProcessorAssemblyResolver
                 var references = asm.GetReferencedAssemblies().Select(a => a.Name).ToArray();
-                var shouldProcess = references.Contains("Mirage.Core") || references.Contains("Mirage.Core.dll");
-                if (!shouldProcess)
+                var shouldProcess = references.Contains("Mirage.Godot") || references.Contains("Mirage.Godot.dll");
+                if (!force && !shouldProcess)
                 {
                     Console.WriteLine($"Skipping weaver on {Path.GetFileName(dllPath)} because assembly does not reference Mirage.Core");
                     Environment.ExitCode = 0;
