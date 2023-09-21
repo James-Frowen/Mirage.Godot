@@ -16,7 +16,7 @@ namespace Mirage.Weaver
             try
             {
                 var args = new List<string>(argsArray);
-                //Console.WriteLine($"ONE-LINE ARGS={string.Join(' ', argsArray.Select(x => $"\"{x}\""))}");
+                Console.WriteLine($"ONE-LINE ARGS={string.Join(' ', argsArray)}");
 
                 Console.WriteLine("Mirage Weaver start");
 
