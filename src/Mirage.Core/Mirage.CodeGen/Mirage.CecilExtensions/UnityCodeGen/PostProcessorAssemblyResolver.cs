@@ -11,10 +11,12 @@ namespace Mirage.CodeGen
     internal sealed class PostProcessorAssemblyResolver : IAssemblyResolver
     {
         private readonly Dictionary<string, AssemblyDefinition> _assemblyCache = new Dictionary<string, AssemblyDefinition>();
-        private readonly CompiledAssembly _compiledAssembly;
         private AssemblyDefinition _selfAssembly;
+        private readonly string _selfName;
+        private readonly string _selfNameDll;
         private readonly FoundAssembly[] _foundAssemblies;
         private readonly string[] _hintDirectories;
+
 
         private class FoundAssembly
         {
@@ -29,7 +31,18 @@ namespace Mirage.CodeGen
 
         public PostProcessorAssemblyResolver(CompiledAssembly compiledAssembly, string[] hintDirectories)
         {
-            _compiledAssembly = compiledAssembly;
+            var name = compiledAssembly.Name;
+            if (name.EndsWith(".dll"))
+            {
+                _selfName = name.Substring(0, name.Length - 4);
+                _selfNameDll = name;
+            }
+            else
+            {
+                _selfName = name;
+                _selfNameDll = name + ".dll";
+            }
+
             _hintDirectories = hintDirectories;
             _foundAssemblies = new FoundAssembly[compiledAssembly.References.Length];
 
@@ -60,9 +73,12 @@ namespace Mirage.CodeGen
 
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
-            // todo add flag for "Mirage.Godot" check instead of always doing it
-            if (name.Name == _compiledAssembly.Name)
+            if (name.Name == _selfName || name.Name == _selfNameDll)
+            {
+                if (_selfAssembly == null)
+                    throw new Exception("Trying to resolve before self assembly is set");
                 return _selfAssembly;
+            }
 
             if (!TryFindFile(name.Name, out var fileName))
                 return null;

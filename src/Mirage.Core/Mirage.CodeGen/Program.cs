@@ -125,8 +125,6 @@ namespace Mirage.Weaver
         public readonly string PdbPath;
         public readonly string[] References;
         public readonly string[] Defines;
-
-
     }
     public class InMemoryAssembly
     {
