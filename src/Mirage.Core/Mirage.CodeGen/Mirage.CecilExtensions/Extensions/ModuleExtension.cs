@@ -53,6 +53,11 @@ namespace Mirage.CodeGen
             throw new ArgumentException($"Invalid Expression {expression.Body.GetType()}");
         }
 
+        public static bool HasGeneratedClass(this ModuleDefinition module)
+        {
+            var type = module.GetType(GeneratedCode.GENERATED_NAMEPACE, GeneratedCode.GENERATED_CLASS);
+            return type != null;
+        }
 
         public static TypeDefinition GeneratedClass(this ModuleDefinition module)
         {

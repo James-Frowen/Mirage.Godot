@@ -40,6 +40,12 @@ namespace Mirage.Weaver
             try
             {
                 var module = assembly.MainModule;
+                if (module.HasGeneratedClass())
+                {
+                    logger.Warning("GeneratedClass already exists. stopping weaver. (this normally happens if weaver runs on the same DLL more than once");
+                    return ResultType.NoChanges;
+                }
+
                 readers = new Readers(module, logger);
                 writers = new Writers(module, logger);
                 propertySiteProcessor = new PropertySiteProcessor(logger);
