@@ -10,6 +10,9 @@ public partial class MobSpawner : Node
 
     public void OnMobTimerTimeout()
     {
+        if (Target is null)
+            return;
+
         var mob = MobScene.Instantiate<Mob>();
         // move to random point on path
         Location.ProgressRatio = GD.Randf();

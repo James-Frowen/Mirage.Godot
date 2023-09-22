@@ -8,7 +8,7 @@ namespace Mirage
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(GeneratedCode));
 
-        public const string GENERATED_NAMEPACE = "MirageGenerated";
+        public const string GENERATED_NAMEPACE = "_MirageGenerated";
         public const string GENERATED_CLASS = "GeneratedNetworkCode";
         public const string INIT_METHOD = "InitReadWriters";
         private static bool hasInit = false;

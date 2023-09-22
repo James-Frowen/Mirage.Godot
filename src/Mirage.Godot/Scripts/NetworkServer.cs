@@ -279,6 +279,9 @@ namespace Mirage
 
         public override void _Process(double delta)
         {
+            if (!Active)
+                return;
+
             World.Time.UpdateFrameTime();
 
             if (ManualUpdate)

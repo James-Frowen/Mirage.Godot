@@ -10,6 +10,11 @@ namespace Example1
 
         public override void _Ready()
         {
+            _networkManager.Client.Started.AddListener(ClientStarted);
+        }
+
+        private void ClientStarted()
+        {
             _networkManager.Client.World.onSpawn += World_onSpawn;
         }
 

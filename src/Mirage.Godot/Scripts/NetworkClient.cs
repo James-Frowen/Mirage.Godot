@@ -339,6 +339,9 @@ namespace Mirage
 
         public override void _Process(double delta)
         {
+            if (!Active)
+                return;
+
             World.Time.UpdateFrameTime();
             // local connection?
             if (!IsLocalClient && Active && _connectState == ConnectState.Connected)
