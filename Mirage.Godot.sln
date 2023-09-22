@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4F783CF4-F82F-4F89-B68B-3D9E7739DA53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mirage.godot", "src\Mirage.Godot\Mirage.godot.csproj", "{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mirage.Godot", "src\Mirage.Godot\Mirage.Godot.csproj", "{8A5A526C-3A3E-40E4-8E5C-63FCD8428EC8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mirage.Core", "Mirage.Core", "{F19A2AF3-B77E-4468-8E41-C86048842A4D}"
 EndProject
@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mirage.Godot.Example1", "src\Mirage.Godot.Example1\Mirage.Godot.Example1.csproj", "{1CEF72BD-43B2-40E7-BB55-ED927EE34D7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mirage.Godot.Example1", "src\Mirage.Godot.Example1\Mirage.Godot.Example1.csproj", "{1CEF72BD-43B2-40E7-BB55-ED927EE34D7E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
