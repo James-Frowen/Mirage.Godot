@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Mirage.Weaver;
 using Mono.Cecil;
-using Unity.CompilationPipeline.Common.ILPostProcessing;
 
 namespace Mirage.CodeGen
 {
@@ -11,7 +11,7 @@ namespace Mirage.CodeGen
     internal sealed class PostProcessorAssemblyResolver : IAssemblyResolver
     {
         private readonly Dictionary<string, AssemblyDefinition> _assemblyCache = new Dictionary<string, AssemblyDefinition>();
-        private readonly ICompiledAssembly _compiledAssembly;
+        private readonly CompiledAssembly _compiledAssembly;
         private AssemblyDefinition _selfAssembly;
         private readonly FoundAssembly[] _foundAssemblies;
         private readonly string[] _hintDirectories;
@@ -27,7 +27,7 @@ namespace Mirage.CodeGen
             public string FoundPath;
         }
 
-        public PostProcessorAssemblyResolver(ICompiledAssembly compiledAssembly, string[] hintDirectories)
+        public PostProcessorAssemblyResolver(CompiledAssembly compiledAssembly, string[] hintDirectories)
         {
             _compiledAssembly = compiledAssembly;
             _hintDirectories = hintDirectories;
@@ -61,7 +61,7 @@ namespace Mirage.CodeGen
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
         {
             // todo add flag for "Mirage.Godot" check instead of always doing it
-            if (name.Name == _compiledAssembly.Name || name.Name == "Mirage.Godot")
+            if (name.Name == _compiledAssembly.Name)
                 return _selfAssembly;
 
             if (!TryFindFile(name.Name, out var fileName))
