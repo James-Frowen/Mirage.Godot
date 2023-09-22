@@ -1,13 +1,22 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Unity.CompilationPipeline.Common.Diagnostics;
 
 namespace Mirage.CodeGen
 {
+    public class DiagnosticMessage
+    {
+        public Type DiagnosticType;
+        public string MessageData;
+
+        public enum Type
+        {
+            Error,
+            Warning
+        }
+    }
+
     public class WeaverLogger : IWeaverLogger
     {
         private readonly List<DiagnosticMessage> _diagnostics = new List<DiagnosticMessage>();
@@ -24,7 +33,7 @@ namespace Mirage.CodeGen
 
         public void Error(string message)
         {
-            AddMessage(message, null, DiagnosticType.Error);
+            AddMessage(message, null, DiagnosticMessage.Type.Error);
         }
 
         public void Error(string message, MemberReference mr)
@@ -34,7 +43,7 @@ namespace Mirage.CodeGen
 
         public void Error(string message, MemberReference mr, SequencePoint sequencePoint)
         {
-            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Error);
+            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticMessage.Type.Error);
         }
 
         public void Error(string message, MethodDefinition md)
@@ -45,7 +54,7 @@ namespace Mirage.CodeGen
 
         public void Warning(string message)
         {
-            AddMessage($"{message}", null, DiagnosticType.Warning);
+            AddMessage($"{message}", null, DiagnosticMessage.Type.Warning);
         }
 
         public void Warning(string message, MemberReference mr)
@@ -55,7 +64,7 @@ namespace Mirage.CodeGen
 
         public void Warning(string message, MemberReference mr, SequencePoint sequencePoint)
         {
-            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticType.Warning);
+            AddMessage($"{message} (at {mr})", sequencePoint, DiagnosticMessage.Type.Warning);
         }
 
         public void Warning(string message, MethodDefinition md)
@@ -63,15 +72,11 @@ namespace Mirage.CodeGen
             Warning(message, md, md.DebugInformation.SequencePoints.FirstOrDefault());
         }
 
-
-        private void AddMessage(string message, SequencePoint sequencePoint, DiagnosticType diagnosticType)
+        private void AddMessage(string message, SequencePoint sequencePoint, DiagnosticMessage.Type diagnosticType)
         {
             _diagnostics.Add(new DiagnosticMessage
             {
                 DiagnosticType = diagnosticType,
-                File = sequencePoint?.Document.Url.Replace($"{Environment.CurrentDirectory}{Path.DirectorySeparatorChar}", ""),
-                Line = sequencePoint?.StartLine ?? 0,
-                Column = sequencePoint?.StartColumn ?? 0,
                 MessageData = message
             });
         }

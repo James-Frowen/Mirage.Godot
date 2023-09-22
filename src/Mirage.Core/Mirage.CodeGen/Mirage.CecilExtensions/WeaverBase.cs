@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Mirage.Weaver;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Unity.CompilationPipeline.Common.Diagnostics;
-using Unity.CompilationPipeline.Common.ILPostProcessing;
 
 namespace Mirage.CodeGen
 {
@@ -20,7 +19,8 @@ namespace Mirage.CodeGen
     {
         public ResultType Type;
         public AssemblyDefinition AssemblyDefinition;
-        public ILPostProcessResult ILPostProcessResult;
+        public InMemoryAssembly InMemoryAssembly;
+        public List<DiagnosticMessage> Diagnostics;
     }
 
     /// <summary>
@@ -44,9 +44,9 @@ namespace Mirage.CodeGen
             };
         }
 
-        protected abstract ResultType Process(AssemblyDefinition assembly, ICompiledAssembly compiledAssembly);
+        protected abstract ResultType Process(AssemblyDefinition assembly, CompiledAssembly compiledAssembly);
 
-        public Result Process(ICompiledAssembly compiledAssembly, string[] hintDirectories)
+        public Result Process(CompiledAssembly compiledAssembly, string[] hintDirectories)
         {
             try
             {
@@ -58,15 +58,15 @@ namespace Mirage.CodeGen
                 }
 
                 var result = Process(_assemblyDefinition, compiledAssembly);
-                var ilResult = CreateResults(result);
-                if (ilResult?.Diagnostics != null)
-                    InsertDebugIfErrors(ilResult.Diagnostics, compiledAssembly);
+                var diagnostics = logger.GetDiagnostics();
+                InsertDebugIfErrors(diagnostics, compiledAssembly);
 
                 return new Result
                 {
                     Type = result,
                     AssemblyDefinition = _assemblyDefinition,
-                    ILPostProcessResult = ilResult
+                    Diagnostics = diagnostics,
+                    InMemoryAssembly = result == ResultType.Success ? Success() : null,
                 };
             }
             catch (Exception e)
@@ -78,7 +78,7 @@ namespace Mirage.CodeGen
                 return new Result
                 {
                     Type = ResultType.Failed,
-                    ILPostProcessResult = Error(e)
+                    Diagnostics = Error(e)
                 };
             }
             finally
@@ -88,17 +88,7 @@ namespace Mirage.CodeGen
             }
         }
 
-        private ILPostProcessResult CreateResults(ResultType result)
-        {
-            if (result == ResultType.Success)
-                return Success();
-            else if (result == ResultType.Failed)
-                return Failed();
-            else // no changes, no results
-                return null;
-        }
-
-        private ILPostProcessResult Success()
+        private InMemoryAssembly Success()
         {
             // write assembly to file on success
             var pe = new MemoryStream();
@@ -112,17 +102,12 @@ namespace Mirage.CodeGen
             };
 
             _assemblyDefinition.Write(pe, writerParameters);
-            return new ILPostProcessResult(new InMemoryAssembly(pe.ToArray(), pdb.ToArray()), logger.GetDiagnostics());
+            return new InMemoryAssembly(pe.ToArray(), pdb.ToArray());
         }
 
-        private ILPostProcessResult Failed()
+        private void InsertDebugIfErrors(List<DiagnosticMessage> diag, CompiledAssembly compiledAssembly)
         {
-            return new ILPostProcessResult(null, logger.GetDiagnostics());
-        }
-
-        private void InsertDebugIfErrors(List<DiagnosticMessage> diag, ICompiledAssembly compiledAssembly)
-        {
-            var errorCount = diag.Where(x => x.DiagnosticType == DiagnosticType.Error).Count();
+            var errorCount = diag.Where(x => x.DiagnosticType == DiagnosticMessage.Type.Error).Count();
             if (errorCount == 0)
                 return;
 
@@ -133,7 +118,7 @@ namespace Mirage.CodeGen
             // insert debug info for weaver as first message,
             diag.Insert(0, new DiagnosticMessage
             {
-                DiagnosticType = DiagnosticType.Error,
+                DiagnosticType = DiagnosticMessage.Type.Error,
                 MessageData = msg
             });
         }
@@ -145,17 +130,17 @@ namespace Mirage.CodeGen
                 : $"{prefix}:[\n  {string.Join("\n  ", array)}\n]";
         }
 
-        private ILPostProcessResult Error(Exception e)
+        private List<DiagnosticMessage> Error(Exception e)
         {
             var message = new DiagnosticMessage
             {
-                DiagnosticType = DiagnosticType.Error,
+                DiagnosticType = DiagnosticMessage.Type.Error,
                 MessageData = $"Weaver {Name} failed on {_assemblyDefinition?.Name} because of Exception: {e}",
             };
-            return new ILPostProcessResult(null, new List<DiagnosticMessage> { message });
+            return new List<DiagnosticMessage> { message };
         }
 
-        private static AssemblyDefinition ReadAssembly(ICompiledAssembly compiledAssembly, string[] hintDirectories)
+        private static AssemblyDefinition ReadAssembly(CompiledAssembly compiledAssembly, string[] hintDirectories)
         {
             var assemblyResolver = new PostProcessorAssemblyResolver(compiledAssembly, hintDirectories);
             var readerParameters = new ReaderParameters

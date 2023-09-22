@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Mirage.CodeGen;
-using Unity.CompilationPipeline.Common.Diagnostics;
-using Unity.CompilationPipeline.Common.ILPostProcessing;
 
 namespace Mirage.Weaver
 {
@@ -71,7 +69,7 @@ namespace Mirage.Weaver
                     Write(result, dllPath, compiledAssembly.PdbPath);
                 }
 
-                Environment.ExitCode = CheckDiagnostics(result.ILPostProcessResult.Diagnostics);
+                Environment.ExitCode = CheckDiagnostics(result.Diagnostics);
             }
             catch (Exception e)
             {
@@ -90,7 +88,7 @@ namespace Mirage.Weaver
                 var type = message.DiagnosticType;
                 Console.WriteLine($"[{type}]: {data}");
 
-                if (type == DiagnosticType.Error)
+                if (type == DiagnosticMessage.Type.Error)
                     exitCode = 1;
             }
             return exitCode;
@@ -98,7 +96,7 @@ namespace Mirage.Weaver
 
         private static void Write(Result result, string dllPath, string pdbPath)
         {
-            var inMemory = result.ILPostProcessResult.InMemoryAssembly;
+            var inMemory = result.InMemoryAssembly;
 
             var pe = inMemory.PeData;
             var pdb = inMemory.PdbData;
@@ -108,7 +106,7 @@ namespace Mirage.Weaver
         }
     }
 
-    public class CompiledAssembly : ICompiledAssembly
+    public class CompiledAssembly
     {
         public CompiledAssembly(string dllPath, string[] references, string[] defines)
         {
@@ -121,12 +119,25 @@ namespace Mirage.Weaver
             Defines = defines;
         }
 
-        public InMemoryAssembly InMemoryAssembly { get; }
+        public readonly InMemoryAssembly InMemoryAssembly;
 
-        public string Name { get; }
-        public string PdbPath { get; }
-        public string[] References { get; }
-        public string[] Defines { get; }
+        public readonly string Name;
+        public readonly string PdbPath;
+        public readonly string[] References;
+        public readonly string[] Defines;
+
+
+    }
+    public class InMemoryAssembly
+    {
+        public InMemoryAssembly(byte[] peData, byte[] pdbData)
+        {
+            PeData = peData;
+            PdbData = pdbData;
+        }
+
+        public readonly byte[] PeData;
+        public readonly byte[] PdbData;
     }
 }
 

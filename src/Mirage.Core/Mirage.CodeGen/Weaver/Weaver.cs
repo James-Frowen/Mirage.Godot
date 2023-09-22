@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Godot;
 using Mirage.CodeGen;
 using Mono.Cecil;
-using Unity.CompilationPipeline.Common.ILPostProcessing;
 using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
 
 namespace Mirage.Weaver
@@ -35,7 +34,7 @@ namespace Mirage.Weaver
 
         public Weaver(IWeaverLogger logger) : base(logger) { }
 
-        protected override ResultType Process(AssemblyDefinition assembly, ICompiledAssembly compiledAssembly)
+        protected override ResultType Process(AssemblyDefinition assembly, CompiledAssembly compiledAssembly)
         {
             Log($"Starting weaver on {compiledAssembly.Name}");
             try
