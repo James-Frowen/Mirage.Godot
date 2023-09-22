@@ -13,6 +13,7 @@ namespace Mirage
 
         private Button serverButton;
         private Button clientButton;
+        private Button hostButton;
         private Button stopButton;
 
         // Called when the node enters the scene tree for the first time.
@@ -37,6 +38,11 @@ namespace Mirage
             clientButton.Pressed += StartClientPressed;
             AddChild(clientButton);
 
+            hostButton = new Button();
+            hostButton.Text = "Start Host";
+            hostButton.Pressed += StartHostPressed;
+            AddChild(hostButton);
+
             stopButton = new Button();
             stopButton.Text = "Stop";
             stopButton.Pressed += StopPressed;
@@ -45,6 +51,7 @@ namespace Mirage
             var pos = new Vector2(20, 20);
             VerticalLayout(serverButton, ref pos);
             VerticalLayout(clientButton, ref pos);
+            VerticalLayout(hostButton, ref pos);
             VerticalLayout(stopButton, ref pos);
 
             ToggleButtons(false);
@@ -73,17 +80,25 @@ namespace Mirage
             ToggleButtons(true);
         }
 
+        private void StartHostPressed()
+        {
+            _socketFactory.Port = _port;
+            _manager.StartHost();
+            ToggleButtons(true);
+        }
+
         private void StopPressed()
         {
             _manager.Stop();
             ToggleButtons(false);
         }
 
-        private void ToggleButtons(bool active)
+        private void ToggleButtons(bool disabled)
         {
-            serverButton.Disabled = active;
-            clientButton.Disabled = active;
-            stopButton.Disabled = !active;
+            serverButton.Disabled = disabled;
+            clientButton.Disabled = disabled;
+            hostButton.Disabled = disabled;
+            stopButton.Disabled = !disabled;
         }
     }
 }
