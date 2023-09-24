@@ -29,27 +29,32 @@ namespace Mirage.Logging
 
         public void Log(LogType type, object message)
         {
-            logHandler.LogFormat(type, message.ToString());
+            if (IsLogTypeAllowed(type))
+                logHandler.LogFormat(type, message.ToString());
         }
 
         public void Log(object message)
         {
-            logHandler.LogFormat(LogType.Log, message.ToString());
+            if (IsLogTypeAllowed(LogType.Log))
+                logHandler.LogFormat(LogType.Log, message.ToString());
         }
 
         public void LogWarning(object message)
         {
-            logHandler.LogFormat(LogType.Warning, message.ToString());
+            if (IsLogTypeAllowed(LogType.Warning))
+                logHandler.LogFormat(LogType.Warning, message.ToString());
         }
 
         public void LogError(object message)
         {
-            logHandler.LogFormat(LogType.Error, message.ToString());
+            if (IsLogTypeAllowed(LogType.Error))
+                logHandler.LogFormat(LogType.Error, message.ToString());
         }
 
         public void LogException(Exception ex)
         {
-            logHandler.LogException(ex);
+            if (IsLogTypeAllowed(LogType.Exception))
+                logHandler.LogException(ex);
         }
 
         #region Implementation of ILogHandler

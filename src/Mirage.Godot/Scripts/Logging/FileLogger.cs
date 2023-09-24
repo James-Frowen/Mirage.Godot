@@ -18,6 +18,7 @@ namespace Mirage
                 if (File.Exists(path))
                     File.Delete(path);
             }
+            File.AppendAllText(path, $"Starting log file: {DateTime.Now}\n\n");
             _path = path;
             _includeStack = includeStack;
         }
