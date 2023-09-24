@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://miuh5bbud7ui"]
 
-[ext_resource type="Script" path="res://Mirage.Godot/Components/NetworkManager.cs" id="1_2hjtm"]
+[ext_resource type="Script" path="res://Mirage.Godot/Components/DebugNetworkManager.cs" id="1_f8xxq"]
 [ext_resource type="Script" path="res://Mirage.Godot/NetworkServer.cs" id="2_0j8ur"]
 [ext_resource type="Script" path="res://Mirage.Godot/Objects/ServerObjectManager.cs" id="3_eyqm1"]
 [ext_resource type="Script" path="res://Mirage.Godot/NetworkClient.cs" id="4_xs4x3"]
@@ -10,14 +10,13 @@
 [ext_resource type="PackedScene" uid="uid://casfcv0sbio2i" path="res://Prefabs/Mob.tscn" id="7_ai56d"]
 
 [node name="NetworkManager" type="Node" node_paths=PackedStringArray("Server", "ServerObjectManager", "Client", "ClientObjectManager", "SocketFactory")]
-script = ExtResource("1_2hjtm")
+script = ExtResource("1_f8xxq")
 Server = NodePath("NetworkServer")
 ServerObjectManager = NodePath("ServerObjectManager")
 MaxConnections = 100
 Client = NodePath("NetworkClient")
 ClientObjectManager = NodePath("ClientObjectManager")
 SocketFactory = NodePath("UdpSocketFactory")
-EnableAllLogs = true
 
 [node name="NetworkServer" type="Node" parent="." node_paths=PackedStringArray("SocketFactory", "ObjectManager")]
 script = ExtResource("2_0j8ur")
