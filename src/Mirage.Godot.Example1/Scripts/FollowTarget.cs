@@ -20,11 +20,16 @@ namespace Example1
 
         public override void _Process(double delta)
         {
-            if (Target is null)
+            if (!HasValidTarget())
                 return;
 
             var lerp = (float)Mathf.Clamp(Speed * delta, 0, 1);
             node.Position = node.Position.Lerp(Target.Position, lerp);
+        }
+
+        internal bool HasValidTarget()
+        {
+            return Target != null && IsInstanceValid(Target);
         }
     }
 }

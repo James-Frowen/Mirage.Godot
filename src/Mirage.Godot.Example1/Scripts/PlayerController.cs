@@ -16,26 +16,22 @@ namespace Example1
         [SyncVar] private float lookAngle;
 
         private Vector3 _targetVelocity = Vector3.Zero;
-        private Node3D _pivot;
         private CharacterBody3D _body;
 
         public override void _Ready()
         {
             _body = GetParent<CharacterBody3D>();
-            _pivot = _body.GetNode<Node3D>("Pivot");
         }
 
         public override void _PhysicsProcess(double delta)
         {
-            GD.Print($"{Identity.NetId} server={this.IsServer()} authority={this.HasAuthority()} {lookAngle}");
-
-
             if (this.HasAuthority())
             {
                 var direction = GetInput();
 
                 // update direction even if not authority
-                SetDirection(direction);
+                if (direction != Vector3.Zero)
+                    lookAngle = GetAngle(direction);
 
                 _targetVelocity.X = direction.X * Speed;
                 _targetVelocity.Z = direction.Z * Speed;
@@ -47,20 +43,12 @@ namespace Example1
 
                 // set values on CharacterBody3D to move
                 _body.Velocity = _targetVelocity;
+                _body.Quaternion = new Quaternion(Vector3.Up, lookAngle);
                 _body.MoveAndSlide();
             }
             else
             {
-                _pivot.Quaternion = new Quaternion(Vector3.Up, lookAngle);
-            }
-        }
-
-        private void SetDirection(Vector3 direction)
-        {
-            if (direction != Vector3.Zero)
-            {
-                lookAngle = GetAngle(direction);
-                _pivot.Quaternion = new Quaternion(Vector3.Up, lookAngle);
+                _body.Quaternion = new Quaternion(Vector3.Up, lookAngle);
             }
         }
 

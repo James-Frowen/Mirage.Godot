@@ -21,7 +21,7 @@ namespace Example1
         private void World_onSpawn(NetworkIdentity obj)
         {
             // already set, dont need to set again
-            if (_followTarget.Target != null)
+            if (_followTarget.HasValidTarget())
                 return;
 
             if (obj.HasAuthority)
