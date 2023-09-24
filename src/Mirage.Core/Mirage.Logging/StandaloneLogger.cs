@@ -93,15 +93,15 @@ namespace Mirage.Logging
 
     public static class Debug
     {
-        public static ILogger unityLogger { get; set; }
+        public static ILogger unityLogger { get; set; } = LogFactory.GetLogger(typeof(Debug));
 
         public static void Assert(bool condition)
         {
-            if (condition) unityLogger.LogError("Assertion failed");
+            if (!condition) unityLogger.LogError("Assertion failed");
         }
         public static void Assert(bool condition, string message)
         {
-            if (condition) unityLogger.LogError(message);
+            if (!condition) unityLogger.LogError(message);
         }
         public static void Log(string message) => unityLogger.Log(message);
         public static void LogWarning(string message) => unityLogger.LogWarning(message);

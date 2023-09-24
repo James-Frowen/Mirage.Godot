@@ -1,3 +1,4 @@
+using System.IO;
 using Godot;
 using Mirage.Logging;
 using Mirage.SocketLayer;
@@ -20,15 +21,21 @@ namespace Mirage
         [Export] public bool EnableAllLogs;
         [Export] public NetworkScene NetworkScene;
 
-        public NetworkManager()
+        private static void setupLgging()
         {
-            LogFactory.ReplaceLogHandler(new GodotLogger(), true);
-            GeneratedCode.Init();
+            var file = $"./MirageLogs/mirage_{System.Environment.ProcessId}.log";
+            GD.Print($"Creating log file {Path.GetFullPath(file)}");
+            var fileLogger = new FileLogger(file, true, true);
+            var godotLogger = new GodotLogger();
+            LogFactory.ReplaceLogHandler(new MultiLogger(godotLogger, fileLogger), true);
         }
 
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            setupLgging();
+            GeneratedCode.Init();
+
             if (EnableAllLogs)
             {
                 LogFactory.SetDefaultLogLevel(LogType.Log, true);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Godot;
 using Mirage.Logging;
 
@@ -34,5 +34,4 @@ namespace Mirage
             }
         }
     }
-
 }
