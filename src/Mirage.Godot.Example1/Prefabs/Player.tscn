@@ -1,15 +1,14 @@
 [gd_scene load_steps=6 format=3 uid="uid://nea4bwm2wwpj"]
 
-[ext_resource type="Script" path="res://Scripts/Player.cs" id="1_fehgi"]
 [ext_resource type="PackedScene" uid="uid://dil1vaeyacmlk" path="res://art/player.glb" id="1_pmg15"]
 [ext_resource type="Script" path="res://Mirage.Godot/Objects/NetworkIdentity.cs" id="3_wtkb4"]
+[ext_resource type="Script" path="res://Scripts/PlayerController.cs" id="4_lirth"]
 [ext_resource type="Script" path="res://Scripts/NetworkTransform3D.cs" id="4_stx5o"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_dmenw"]
 radius = 1.0
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_fehgi")
 
 [node name="Pivot" type="Node3D" parent="."]
 
@@ -26,3 +25,8 @@ _root = NodePath("..")
 [node name="NetworkTransform" type="Node" parent="." node_paths=PackedStringArray("_target")]
 script = ExtResource("4_stx5o")
 _target = NodePath("..")
+
+[node name="PlayerController" type="Node" parent="."]
+script = ExtResource("4_lirth")
+From = 1
+To = 6
