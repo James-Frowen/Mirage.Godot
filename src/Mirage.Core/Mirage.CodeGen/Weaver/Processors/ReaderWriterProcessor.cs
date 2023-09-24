@@ -65,7 +65,8 @@ namespace Mirage.Weaver
             ProcessModule();
 
             // we need to check if any methods are created from FindAllExtensionMethods or ProcessModule
-            return processed || writers.Count != writeCount || readers.Count != readCount;
+            return true; // todo use force flag
+            //return processed || writers.Count != writeCount || readers.Count != readCount;
         }
 
         /// <summary>
