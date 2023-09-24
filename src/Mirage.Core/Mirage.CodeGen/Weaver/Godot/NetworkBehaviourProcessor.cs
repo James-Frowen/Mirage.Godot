@@ -124,7 +124,7 @@ namespace Mirage.Weaver
             rpcCounter.Set(count);
 
             // override virtual method so returns total
-            var method = netBehaviourSubclass.AddMethod(nameof(INetworkNodeWithRpc.GetRpcCount), MethodAttributes.Virtual | MethodAttributes.Family, typeof(int));
+            var method = netBehaviourSubclass.AddMethod(nameof(NetworkBehaviour.GetRpcCount), MethodAttributes.Virtual | MethodAttributes.Public, typeof(int));
             var worker = method.Body.GetILProcessor();
             // write count of base+current so that `GetInBase` call will return total
             worker.Emit(OpCodes.Ldc_I4, rpcCounter.GetInBase() + count);
