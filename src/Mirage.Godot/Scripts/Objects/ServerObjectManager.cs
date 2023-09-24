@@ -377,6 +377,9 @@ namespace Mirage
                 "SendSpawnMessage should only be called if OnlySpawnOnAuthenticated is false, player is authenticated, or there is custom visibility");
             if (logger.LogEnabled()) logger.Log($"Server SendSpawnMessage: name={identity.Name} PrefabHash={identity.PrefabHash:X} SceneHash={identity.SceneHash:X} netId={identity.NetId}");
 
+            if (identity.PrefabHash == 0)
+                throw new SpawnObjectException($"{identity} had no PrefabHash. Without one it will be unable to spawn on client");
+
             // one writer for owner, one for observers
             using (PooledNetworkWriter ownerWriter = NetworkWriterPool.GetWriter(), observersWriter = NetworkWriterPool.GetWriter())
             {

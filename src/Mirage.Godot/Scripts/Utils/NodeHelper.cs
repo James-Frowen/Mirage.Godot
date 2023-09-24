@@ -17,13 +17,29 @@ namespace Mirage
         {
             return node.GetChildren().OfType<NetworkIdentity>().First();
         }
-        public static T GetComponent<T>(this Node node)
+        public static T GetSibling<T>(this Node node)
         {
-            return node.GetParent().GetChildren().OfType<T>().FirstOrDefault();
+            var parent = node.GetParent();
+            var children = parent.GetChildren();
+            var ofType = children.OfType<T>();
+            var first = ofType.FirstOrDefault();
+            return first;
         }
-        public static bool TryGetComponent<T>(this Node node, out T result)
+        public static T GetFirstChild<T>(this Node node)
         {
-            result = node.GetParent().GetChildren().OfType<T>().FirstOrDefault();
+            var children = node.GetChildren();
+            var ofType = children.OfType<T>();
+            var first = ofType.FirstOrDefault();
+            return first;
+        }
+        public static bool TryGetSibling<T>(this Node node, out T result)
+        {
+            result = GetSibling<T>(node);
+            return result != null;
+        }
+        public static bool TryGetFirstChild<T>(this Node node, out T result)
+        {
+            result = GetFirstChild<T>(node);
             return result != null;
         }
 
@@ -46,13 +62,13 @@ namespace Mirage
 
         public static T GetComponentInParent<T>(this Node node)
         {
-            // any silbins?
-            if (TryGetComponent<T>(node, out var result))
+            var parent = node.GetParent();
+            if (TryGetFirstChild<T>(parent, out var result))
             {
                 return result;
             }
 
-            return GetComponentInParent<T>(node.GetParent());
+            return GetComponentInParent<T>(parent);
         }
 
         public static NetworkIdentity TryGetNetworkIdentity<T>(this T node) where T : Node, INetworkNode

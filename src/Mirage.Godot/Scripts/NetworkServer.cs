@@ -271,7 +271,7 @@ namespace Mirage
         {
             if (SocketFactory is null)
             {
-                SocketFactory = this.GetComponent<SocketFactory>();
+                SocketFactory = this.GetSibling<SocketFactory>();
             }
             if (SocketFactory == null)
                 throw new InvalidOperationException($"{nameof(SocketFactory)} could not be found for {nameof(NetworkServer)}");

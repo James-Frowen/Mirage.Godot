@@ -552,7 +552,7 @@ namespace Mirage
             if (logger.LogEnabled()) logger.Log($"[ClientObjectManager] Instantiate Prefab for netid:{msg.NetId}, hash:{msg.PrefabHash}, prefab:{prefab.ResourceName}");
 
             var clone = prefab.Instantiate();
-
+            GetTree().Root.AddChild(clone);
 
             var spawnValues = msg.SpawnValues;
             if (clone is Node3D clone3d)
@@ -570,7 +570,7 @@ namespace Mirage
                     clone2d.Rotation = spawnValues.Rotation2d.Value;
             }
 
-            return clone.GetComponent<NetworkIdentity>();
+            return clone.GetFirstChild<NetworkIdentity>();
         }
 
         internal NetworkIdentity SpawnSceneObject(SpawnMessage msg)

@@ -367,7 +367,7 @@ namespace Mirage
                 if (_visibility is null)
                 {
                     // try get behaviour, otherwise just set default class
-                    if (this.TryGetComponent<NetworkVisibility>(out var visibilityBehaviour))
+                    if (this.TryGetSibling<NetworkVisibility>(out var visibilityBehaviour))
                         _visibility = visibilityBehaviour;
                     else
                     {
