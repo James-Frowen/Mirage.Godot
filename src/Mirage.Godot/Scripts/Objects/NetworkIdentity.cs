@@ -326,7 +326,7 @@ namespace Mirage
         /// <param name="components"></param>
         private INetworkNode[] FindBehaviourForThisIdentity()
         {
-            var childComponents = this.GetComponentsInChildrenEnumerable<INetworkNode>().ToList();
+            var childComponents = Root.GetComponentsInChildrenEnumerable<INetworkNode>().ToList();
 
             // start at last so we can remove from end of array instead of start
             for (var i = childComponents.Count - 1; i >= 0; i--)
@@ -367,7 +367,8 @@ namespace Mirage
                 if (_visibility is null)
                 {
                     // try get behaviour, otherwise just set default class
-                    if (this.TryGetSibling<NetworkVisibility>(out var visibilityBehaviour))
+                    var visibilityBehaviour = NetworkBehaviours.OfType<NetworkVisibility>().FirstOrDefault();
+                    if (visibilityBehaviour != null)
                         _visibility = visibilityBehaviour;
                     else
                     {
