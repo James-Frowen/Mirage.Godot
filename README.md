@@ -20,31 +20,45 @@ Video Demo of example project: https://youtu.be/Ty55PZWtsJI
 ### Build from source
 
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
-2) Build code `dotnet build`
-    - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the folder easier to find
-3) Copy the `dll` files into your godot project, Or reference them in your `.csproj` file:
-    - Mirage.godot.dll
-    - Mirage.Logging.dll
-    - Mirage.SocketLayer.dll
-    - Mirage.Core.dll
-5) Build `Mirage.CodeGen.exe` then include `PostBuild` target in your csproj (see below)
+2) Copy `src/Mirage.Godot/Scripts` into your godot project
+3) In your project's main `.csproj` add reference to:
+    - `Mirage.Logging.csproj`
+    - `Mirage.SocketLayer.csproj`
+4) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
+    - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the path easier to find
+5) Add `PostBuild` target to your main csproj
+```xml
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="path/to/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir) -force" />
+    <Error Condition="$(ExitCode) == 1" />
+  </Target>
+```
 
+#### Notes
+
+`Mirage.CodeGen.csproj` currently uses reference to `Mirage.Godot.csproj` to find Mirage types, but when running will use the types inside the target csproj.
+
+#### Setup commands
+
+Commands to run steps above (replace `path/to/project` with your project)
 ```sh
 git clone git@github.com:James-Frowen/Mirage.Godot.git
 cd Mirage.Godot
-dotnet build
+cp src/Mirage.Godot/Scripts "path/to/project/Mirage.Godot"
+dotnet build src/Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -o ./CodeGen
 ```
+and then add `PostBuild` target manually with path to `CodeGen/CodeGen.exe`
 
 **note:** you may want to exclude the `src/Mirage.Godot/Scripts/Example1` folder when building or it will end up in the Mirage.Godot dll
 
-## Coge Generation
+## Code Generation
 
-Mirage.Godot uses Mono.Cecil to modify the c# source code after it is compiled, this allowes for features to have high performance and easy to use.
+Mirage.Godot uses Mono.Cecil to modify the c# source code after it is compiled, this allows for features to have high performance and easy to use.
 
 To Setup add this code to the default csproj for the godot project
-```csproj
+```xml
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="Path/To/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir)" />
+    <Exec Command="path/to/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir) -force" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
 ```
@@ -58,4 +72,10 @@ The example use symlinks to include the Mirage.Godot scripts in the 2nd project.
 To clone this repo with those symlinks run as administrator:
 ```sh
 git clone -c core.symlinks=true git@github.com:James-Frowen/Mirage.Godot.git
+```
+
+### Codegen 
+when developing the code gen locally you might want to add this step to the start of PostBuild targets so that it will rebuild the codegen project before running it
+```xml
+    <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" />
 ```
