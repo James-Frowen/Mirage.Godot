@@ -1,4 +1,3 @@
-using System.IO;
 using Godot;
 using Mirage.Logging;
 using Mirage.SocketLayer;
@@ -7,6 +6,8 @@ namespace Mirage
 {
     public partial class NetworkManager : Node
     {
+        private static readonly ILogger logger = LogFactory.GetLogger<NetworkManager>();
+
         [ExportGroup("Server")]
         [Export] public NetworkServer Server;
         [Export] public ServerObjectManager ServerObjectManager;
@@ -21,62 +22,28 @@ namespace Mirage
         [Export] public bool EnableAllLogs;
         [Export] public NetworkScene NetworkScene;
 
-        private static void setupLgging()
-        {
-            var file = $"./MirageLogs/mirage_{System.Environment.ProcessId}.log";
-            GD.Print($"Creating log file {Path.GetFullPath(file)}");
-            var fileLogger = new FileLogger(file, true, true);
-            var godotLogger = new GodotLogger();
-            LogFactory.ReplaceLogHandler(new MultiLogger(godotLogger, fileLogger), true);
-        }
-
-        // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
-            setupLgging();
+            base._Ready();
             GeneratedCode.Init();
-
-            if (EnableAllLogs)
-            {
-                LogFactory.SetDefaultLogLevel(LogType.Log, true);
-                LogFactory.GetLogger<Peer>().filterLogType = LogType.Warning;
-            }
         }
 
-        public void StartServer()
+        public virtual void StartServer()
         {
-            GD.Print("Starting Server Mode");
-            // dont create a new peer config if we have already dont it somewhere else
-            if (Server.PeerConfig == null)
-            {
-                // set MaxConnections
-                Server.PeerConfig = new Config
-                {
-                    MaxConnections = MaxConnections,
-                };
-            }
+            logger.Log("Starting Server Mode");
+            Server.PeerConfig ??= new Config { MaxConnections = MaxConnections };
             Server.StartServer();
-            ClientObjectManager.PrepareToSpawnSceneObjects();
         }
 
-        public void StartClient()
+        public virtual void StartClient()
         {
-            GD.Print("Starting Client Mode");
+            logger.Log("Starting Client Mode");
             Client.Connect();
         }
 
-        public void StartHost()
+        public virtual void StartHost()
         {
-            GD.Print("Starting Host Mode");
-            // dont create a new peer config if we have already dont it somewhere else
-            if (Server.PeerConfig == null)
-            {
-                // set MaxConnections
-                Server.PeerConfig = new Config
-                {
-                    MaxConnections = MaxConnections,
-                };
-            }
+            logger.Log("Starting Host Mode");
             Server.StartServer(Client);
         }
 
