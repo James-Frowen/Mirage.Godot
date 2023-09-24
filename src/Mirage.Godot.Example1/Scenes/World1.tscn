@@ -35,6 +35,7 @@ point_count = 5
 [node name="Main" type="Node3D"]
 
 [node name="NetworkManager" parent="." instance=ExtResource("2_die1l")]
+EnableAllLogs = false
 
 [node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_networkManager")]
 script = ExtResource("2_pnjea")
