@@ -15,10 +15,6 @@ Video Demo of example project: https://youtu.be/Ty55PZWtsJI
 
 ## Install 
 
-*work in progrss*
-
-### Build from source
-
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
 2) Copy `src/Mirage.Godot/Scripts` into your godot project
 3) In your project's main `.csproj` add reference to:
