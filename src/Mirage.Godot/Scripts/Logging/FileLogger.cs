@@ -13,6 +13,10 @@ namespace Mirage
 
         public FileLogger(string path, bool clearFile, bool includeStack)
         {
+            var dir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
             if (clearFile)
             {
                 if (File.Exists(path))
