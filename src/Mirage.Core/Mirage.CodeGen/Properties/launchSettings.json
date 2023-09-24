@@ -2,7 +2,7 @@
   "profiles": {
     "Mirage.CodeGen": {
       "commandName": "Project",
-      "commandLineArgs": "D:\\GodotProjects\\Mirage.Godot\\src\\Mirage.Godot.Example1\\.godot\\mono\\temp\\obj\\Debug\\Mirage.godot.example1.dll D:\\GodotProjects\\Mirage.Godot\\src\\Mirage.Godot.Example1\\.godot\\mono\\temp\\bin\\Debug\\ -force"
+      "commandLineArgs": "D:\\GodotProjects\\Mirage.Godot\\src\\Mirage.Godot.Example1\\.godot\\mono\\temp\\obj\\Debug\\Mirage.Godot.Example1.dll D:\\GodotProjects\\Mirage.Godot\\src\\Mirage.Godot.Example1\\.godot\\mono\\temp\\bin\\Debug\\ -force"
     }
   }
 }
