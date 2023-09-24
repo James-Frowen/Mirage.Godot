@@ -2,6 +2,8 @@
 
 High level c# Networking for [Godot](https://godotengine.org/) based on popular open source Unity networking solutions [Mirror](https://github.com/MirrorNetworking/Mirror) and [Mirage](https://github.com/MirageNet/Mirage)
 
+Video Demo of example project: https://youtu.be/Ty55PZWtsJI
+
 ## Features
 
 - Multiple Transport support. Use built in UDP transport or add your own to work with other services
