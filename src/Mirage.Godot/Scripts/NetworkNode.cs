@@ -35,15 +35,15 @@ namespace Mirage
 
     public interface INetworkNodeWithSyncVar : INetworkNode
     {
-        void SerializeSyncVars(NetworkReader reader, bool initial);
-        bool DeserializeSyncVars(NetworkReader reader, bool initial);
+        bool SerializeSyncVars(NetworkWriter writer, bool initial);
+        void DeserializeSyncVars(NetworkReader reader, bool initial);
     }
 
     public class NetworkNodeSyncVars
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkNodeSyncVars));
 
-        public readonly INetworkNode Node;
+        public readonly INetworkNodeWithSyncVar Node;
         public readonly NetworkIdentity Identity;
         public SyncSettings SyncSettings;
 
@@ -55,7 +55,7 @@ namespace Mirage
         private ulong _syncVarHookGuard;
         private readonly List<ISyncObject> syncObjects = new List<ISyncObject>();
 
-        public NetworkNodeSyncVars(INetworkNode node, NetworkIdentity identity)
+        public NetworkNodeSyncVars(INetworkNodeWithSyncVar node, NetworkIdentity identity)
         {
             Node = node;
             if (node is NetworkBehaviour behaviour)
@@ -233,7 +233,7 @@ namespace Mirage
         {
             var objectWritten = SerializeObjects(writer, initialState);
 
-            var syncVarWritten = SerializeSyncVars(writer, initialState);
+            var syncVarWritten = Node.SerializeSyncVars(writer, initialState);
 
             return objectWritten || syncVarWritten;
         }
@@ -248,33 +248,7 @@ namespace Mirage
             DeserializeObjects(reader, initialState);
 
             _deserializeMask = 0;
-            DeserializeSyncVars(reader, initialState);
-        }
-
-        // Don't rename. Weaver uses this exact function name.
-        public virtual bool SerializeSyncVars(NetworkWriter writer, bool initialState)
-        {
-            return false;
-
-            // SyncVar are written here in subclass
-
-            // if initialState
-            //   write all SyncVars
-            // else
-            //   write syncVarDirtyBits
-            //   write dirty SyncVars
-        }
-
-        // Don't rename. Weaver uses this exact function name.
-        public virtual void DeserializeSyncVars(NetworkReader reader, bool initialState)
-        {
-            // SyncVars are read here in subclass
-
-            // if initialState
-            //   read all SyncVars
-            // else
-            //   read syncVarDirtyBits
-            //   read dirty SyncVars
+            Node.DeserializeSyncVars(reader, initialState);
         }
 
         protected internal void SetDeserializeMask(ulong dirtyBit, int offset)

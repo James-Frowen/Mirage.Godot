@@ -196,8 +196,6 @@ namespace Mirage.Weaver
             // if (!SyncVarEqual(value, ref playerData))
             var endOfMethod = worker.Create(OpCodes.Nop);
 
-            // this
-            worker.Append(worker.Create(OpCodes.Ldarg_0));
             // new value to set
             worker.Append(worker.Create(OpCodes.Ldarg, valueParam));
             // reference to field to set
@@ -682,8 +680,6 @@ namespace Mirage.Weaver
                     worker.Append(worker.Create(OpCodes.Brtrue, endHookInvoke));
                 }
 
-                // 'this.' for 'this.SyncVarEqual'
-                worker.Append(worker.Create(OpCodes.Ldarg_0));
                 // 'oldValue'
                 worker.Append(worker.Create(OpCodes.Ldloc, oldValue));
                 // 'newValue'
