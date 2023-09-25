@@ -8,16 +8,13 @@ namespace Mirage
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkManager>();
 
-        [ExportGroup("Server")]
         [Export] public NetworkServer Server;
         [Export] public ServerObjectManager ServerObjectManager;
         [Export] public int MaxConnections;
 
-        [ExportGroup("Client")]
         [Export] public NetworkClient Client;
         [Export] public ClientObjectManager ClientObjectManager;
 
-        [ExportGroup("Shared")]
         [Export] public SocketFactory SocketFactory;
         [Export] public bool EnableAllLogs;
         [Export] public NetworkScene NetworkScene;

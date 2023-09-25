@@ -4,21 +4,22 @@ namespace Mirage
 {
     public partial class CharacterSpawner : Node
     {
-        [Export] private NetworkManager _networkManager;
-        [Export] private bool _spawnOnConnect;
-        [Export] private PackedScene _player;
+        [Export] public NetworkServer Server;
+        [Export] public ServerObjectManager ServerObjectManager;
+        [Export] public bool SpawnOnConnect;
+        [Export] public PackedScene Player;
         private int spawnOffset;
 
         public override void _Ready()
         {
-            _networkManager.Server.Authenticated += Server_Authenticated;
+            Server.Authenticated += Server_Authenticated;
         }
 
         private void Server_Authenticated(NetworkPlayer player)
         {
-            if (_spawnOnConnect)
+            if (SpawnOnConnect)
             {
-                var clone = _player.Instantiate();
+                var clone = Player.Instantiate();
                 if (clone is Node3D node3d)
                 {
                     node3d.Position += Vector3.Forward * (2 * spawnOffset);
@@ -31,8 +32,8 @@ namespace Mirage
                 GetTree().Root.AddChild(clone);
 
                 var identity = clone.GetNetworkIdentity();
-                identity.PrefabHash = PrefabHashHelper.GetPrefabHash(_player);
-                _networkManager.ServerObjectManager.AddCharacter(player, identity);
+                identity.PrefabHash = PrefabHashHelper.GetPrefabHash(Player);
+                ServerObjectManager.AddCharacter(player, identity);
             }
         }
     }
