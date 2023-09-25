@@ -36,11 +36,11 @@ point_count = 5
 
 [node name="NetworkManager" parent="." instance=ExtResource("2_die1l")]
 
-[node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_networkManager")]
+[node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("Server", "ServerObjectManager")]
 script = ExtResource("2_pnjea")
-_networkManager = NodePath("..")
-_spawnOnConnect = true
-_player = ExtResource("2_04pam")
+Server = NodePath("../NetworkServer")
+ServerObjectManager = NodePath("../ServerObjectManager")
+Player = ExtResource("2_04pam")
 
 [node name="NetworkScene" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_sceneObjects")]
 script = ExtResource("3_cn7xa")
