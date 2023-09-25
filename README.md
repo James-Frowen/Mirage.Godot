@@ -22,12 +22,20 @@ Video Demo of example project: https://youtu.be/Ty55PZWtsJI
     - `Mirage.SocketLayer.csproj`
 4) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
     - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the path easier to find
-5) Add `PostBuild` target to your main csproj
+5) Add Build Targets to your main csproj
 ```xml
+<Project Sdk="Godot.NET.Sdk/4.1.1">
+  ...
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="path/to/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir) -force" />
+    <Exec Command="path/to/Mirage.CodeGen.exe $(TargetPath) -force" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
+  <Target Name="PrePublish" BeforeTargets="Publish">
+    <Exec Command="path/to/Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
+    <Error Condition="$(ExitCode) == 1" />
+  </Target>
+</Project>
 ```
 
 #### Notes
@@ -53,12 +61,20 @@ Mirage.Godot uses Mono.Cecil to modify the c# source code after it is compiled, 
 
 To Setup add this code to the default csproj for the godot project
 ```xml
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="path/to/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir) -force" />
-    <Error Condition="$(ExitCode) == 1" />
-  </Target>
+<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Exec Command="path/to/Mirage.CodeGen.exe $(TargetPath) -force" />
+  <Error Condition="$(ExitCode) == 1" />
+</Target>
+<Target Name="PrePublish" BeforeTargets="Publish">
+  <Exec Command="path/to/Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
+  <Error Condition="$(ExitCode) == 1" />
+</Target>
 ```
-and modify the `Path/To/Mirage.CodeGen.exe ` path to where you built the `Mirage.CodeGen.exe` file
+and modify the `Path/To/Mirage.CodeGen.exe ` path to where you built the `Mirage.CodeGen.exe` file.
+
+Note, both targets are required:
+- `TargetPath` works best in editor to ensure code gen changes are applied before running
+- `PublishDir` is needed because `TargetPath` is not the path copied when exporting the build
 
 
 ## Development

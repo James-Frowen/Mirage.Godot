@@ -11,7 +11,12 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" />
-    <Exec Command="$(ProjectDir)../Mirage.Core/Mirage.CodeGen/bin/Release/net6.0/Mirage.CodeGen.exe $(IntermediateOutputPath)$(TargetFileName) $(TargetDir) -force" />
+    <Exec Command="$(ProjectDir)../Mirage.Core/Mirage.CodeGen/bin/Release/net6.0/Mirage.CodeGen.exe $(TargetPath) -force" />
+    <Error Condition="$(ExitCode) == 1" />
+  </Target>
+  <Target Name="PrePublish" BeforeTargets="Publish">
+    <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" />
+    <Exec Command="$(ProjectDir)../Mirage.Core/Mirage.CodeGen/bin/Release/net6.0/Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
 </Project>
