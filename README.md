@@ -86,6 +86,8 @@ To clone this repo with those symlinks run as administrator:
 git clone -c core.symlinks=true git@github.com:James-Frowen/Mirage.Godot.git
 ```
 
+If downloading without symlinks (like from zip file) then you will need to manually copy (not move) the files from `src/Mirage.Godot/Scripts` to `src/Mirage.Godot.Example1/Mirage.Godot`
+
 ### Codegen 
 when developing the code gen locally you might want to add this step to the start of PostBuild targets so that it will rebuild the codegen project before running it
 ```xml
