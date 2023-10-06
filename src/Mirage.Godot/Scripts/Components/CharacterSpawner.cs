@@ -2,6 +2,7 @@ using Godot;
 
 namespace Mirage
 {
+    [GlobalClass]
     public partial class CharacterSpawner : Node
     {
         [Export] public NetworkServer Server;

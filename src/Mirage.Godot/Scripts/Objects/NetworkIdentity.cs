@@ -99,6 +99,7 @@ namespace Mirage
     ///     </description></item>
     /// </list>
     /// </remarks>
+    [GlobalClass]
     public sealed partial class NetworkIdentity : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkIdentity>();

@@ -4,6 +4,7 @@ using Mirage.SocketLayer;
 
 namespace Mirage
 {
+    [GlobalClass]
     public partial class NetworkManager : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkManager>();

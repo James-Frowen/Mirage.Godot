@@ -11,6 +11,7 @@ using Mirage.Serialization;
 
 namespace Mirage
 {
+    [GlobalClass]
     public partial class ClientObjectManager : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(ClientObjectManager));

@@ -17,6 +17,7 @@ namespace Mirage
     /// <remarks>
     /// <para>NetworkServer handles remote connections from remote clients, and also has a local connection for a local client.</para>
     /// </remarks>
+    [GlobalClass]
     public partial class NetworkServer : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger(typeof(NetworkServer));

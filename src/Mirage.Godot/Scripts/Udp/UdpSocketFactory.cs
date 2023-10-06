@@ -5,6 +5,7 @@ using Mirage.SocketLayer;
 
 namespace Mirage.Udp
 {
+    [GlobalClass]
     public partial class UdpSocketFactory : SocketFactory
     {
         [Export] public int Port = 7777;
