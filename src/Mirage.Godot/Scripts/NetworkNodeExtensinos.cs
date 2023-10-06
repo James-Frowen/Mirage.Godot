@@ -20,7 +20,7 @@ namespace Mirage
         public static NetworkPlayer GetClientPlayer(INetworkNode node) => node.Identity.Client.Player;
         public static NetworkPlayer GetServerLocalPlayer(INetworkNode node) => node.Identity.Server.LocalPlayer;
 
-        public static void InitSyncObject(NetworkBehaviour behaviour, ISyncObject syncObject) => behaviour.NetworkNodeSyncVars.InitSyncObject(syncObject);
+        public static void InitSyncObject(NetworkBehaviour behaviour, ISyncObject syncObject) => behaviour.InitSyncObject(syncObject);
         public static void SetDeserializeMask(NetworkBehaviour behaviour, ulong dirtyBit, int offset) => behaviour.NetworkNodeSyncVars.SetDeserializeMask(dirtyBit, offset);
         public static ulong SyncVarDirtyBits(NetworkBehaviour behaviour) => behaviour.NetworkNodeSyncVars._syncVarDirtyBits;
         public static void SetDirtyBit(NetworkBehaviour behaviour, ulong bitMask) => behaviour.NetworkNodeSyncVars.SetDirtyBit(bitMask);

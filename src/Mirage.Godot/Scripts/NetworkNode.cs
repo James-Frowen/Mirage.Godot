@@ -35,6 +35,7 @@ namespace Mirage
 
     public interface INetworkNodeWithSyncVar : INetworkNode
     {
+        List<ISyncObject> SyncObjects { get; }
         bool SerializeSyncVars(NetworkWriter writer, bool initial);
         void DeserializeSyncVars(NetworkReader reader, bool initial);
     }
@@ -53,7 +54,7 @@ namespace Mirage
         internal ulong _deserializeMask;
         private bool _syncObjectsInitialized;
         private ulong _syncVarHookGuard;
-        private readonly List<ISyncObject> syncObjects = new List<ISyncObject>();
+        private List<ISyncObject> syncObjects => Node.SyncObjects;
 
         public NetworkNodeSyncVars(INetworkNodeWithSyncVar node, NetworkIdentity identity)
         {
@@ -99,16 +100,10 @@ namespace Mirage
 
             // find all the ISyncObjects in this behaviour
             foreach (var syncObject in syncObjects)
+            {
+                syncObject.OnChange += SyncObject_OnChange;
                 syncObject.SetNetworkBehaviour(Node);
-        }
-
-        // this gets called in the constructor by the weaver
-        // for every SyncObject in the component (e.g. SyncLists).
-        // We collect all of them and we synchronize them with OnSerialize/OnDeserialize
-        protected internal void InitSyncObject(ISyncObject syncObject)
-        {
-            syncObjects.Add(syncObject);
-            syncObject.OnChange += SyncObject_OnChange;
+            }
         }
 
         private void SyncObject_OnChange()
