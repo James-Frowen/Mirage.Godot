@@ -23,9 +23,12 @@ namespace Mirage
         public static void InitSyncObject(NetworkBehaviour behaviour, ISyncObject syncObject) => behaviour.InitSyncObject(syncObject);
         public static void SetDeserializeMask(NetworkBehaviour behaviour, ulong dirtyBit, int offset) => behaviour.NetworkNodeSyncVars.SetDeserializeMask(dirtyBit, offset);
         public static ulong SyncVarDirtyBits(NetworkBehaviour behaviour) => behaviour.NetworkNodeSyncVars._syncVarDirtyBits;
-        public static void SetDirtyBit(NetworkBehaviour behaviour, ulong bitMask) => behaviour.NetworkNodeSyncVars.SetDirtyBit(bitMask);
-        public static bool GetSyncVarHookGuard(NetworkBehaviour behaviour, ulong bitMask) => behaviour.NetworkNodeSyncVars.GetSyncVarHookGuard(bitMask);
-        public static void SetSyncVarHookGuard(NetworkBehaviour behaviour, ulong bitMask, bool value) => behaviour.NetworkNodeSyncVars.SetSyncVarHookGuard(bitMask, value);
+        public static void SetDirtyBit(NetworkBehaviour behaviour, ulong bitMask) => behaviour.NetworkNodeSyncVars?.SetDirtyBit(bitMask);
+        // note: hook guard will return true before setup,
+        //       this means that syncvar hooks will never be invoked before setup
+        //       this should be fine because before setup should only be the constructor most of the time
+        public static bool GetSyncVarHookGuard(NetworkBehaviour behaviour, ulong bitMask) => behaviour.NetworkNodeSyncVars?.GetSyncVarHookGuard(bitMask) ?? true;
+        public static void SetSyncVarHookGuard(NetworkBehaviour behaviour, ulong bitMask, bool value) => behaviour.NetworkNodeSyncVars?.SetSyncVarHookGuard(bitMask, value);
         public static bool SyncVarEqual<T>(T value, T fieldValue) => EqualityComparer<T>.Default.Equals(value, fieldValue);
     }
 }
