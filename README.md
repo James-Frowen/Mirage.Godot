@@ -15,7 +15,7 @@ Video Demo of example project: https://youtu.be/Ty55PZWtsJI
 
 ## Docs
 
-Documentation for the unity version of Mirage can be found [https://miragenet.github.io/Mirage/](https://miragenet.github.io/Mirage/). Most of the same concepts will apply to the Godot version.
+Documentation for the unity version of Mirage can be found at [https://miragenet.github.io/Mirage/](https://miragenet.github.io/Mirage/). Most of the same concepts will apply to the Godot version.
 
 ## Install 
 
