@@ -62,18 +62,23 @@ namespace Mirage
             }
         }
 
-        public bool ShouldSyncFrom(NetworkIdentity identity)
+        public bool ShouldSyncFrom(NetworkIdentity identity, bool syncInHostMode)
         {
             if ((From & SyncFrom.Server) != 0 && identity.IsServer)
             {
-                // if ObserversOnly, then we always want to sync
+                // if ObserversOnly, then we always want too sync
                 if ((To & SyncTo.ObserversOnly) != 0)
                     return true;
 
                 // dont need to check SyncTo.Owner, it is only case left here
 
-                // if to.owner, only sync if not host
-                return !identity.IsClient; // not host
+                // note: need syncInHostMode check for syncobjcets, so that it wont set ReadOnly flag
+                if (syncInHostMode)
+                    return true;
+                else
+                    // dont sync for host
+                    // if to.owner, only sync if not host
+                    return !identity.IsClient; // not host
             }
 
             if ((From & SyncFrom.Owner) != 0 && identity.HasAuthority)
@@ -82,7 +87,11 @@ namespace Mirage
 
                 // if from owner, must be to server
                 if ((To & SyncTo.Server) != 0)
-                { // true if not host OR to ObserversOnly
+                {
+                    if (syncInHostMode)
+                        return true;
+
+                    // true if not host OR to ObserversOnly
                     return !identity.IsServer || (To & SyncTo.ObserversOnly) != 0;
                 }
             }

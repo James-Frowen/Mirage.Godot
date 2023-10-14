@@ -639,7 +639,7 @@ namespace Mirage
                     continue;
 
                 // check if we should be writing this components
-                if (!comp.SyncSettings.ShouldSyncFrom(this))
+                if (!comp.SyncSettings.ShouldSyncFrom(this, false))
                     continue;
 
                 if (logger.LogEnabled()) logger.Log($"OnSerializeAllSafely: '{Name}', component '{comp.GetType()}', initial state: '{initialState}'");
