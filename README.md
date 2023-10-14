@@ -13,6 +13,10 @@ Video Demo of example project: https://youtu.be/Ty55PZWtsJI
 - Spawn Objects other the network
 - Object ownership. Allows the client to have control over object and automatically sync changes to other clients
 
+## Docs
+
+Documentation for the unity version of Mirage can be found [Here](https://miragenet.github.io/Mirage/). Most of the same concepts will apply to the Godot version.
+
 ## Install 
 
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
