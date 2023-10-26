@@ -22,6 +22,12 @@ namespace Mirage
         public NetworkClient Client => _client;
 
         /// <summary>
+        /// The node that will be the parent when spawning new PackedScene
+        /// <para>if null, the Tree's root node is used instead</para>
+        /// </summary>
+        [Export] public Node SpawnParent;
+
+        /// <summary>
         /// List of prefabs that will be registered with the spawning system.
         /// <para>For each of these prefabs, ClientManager.RegisterPrefab() will be automatically invoke.</para>
         /// </summary>
@@ -553,7 +559,8 @@ namespace Mirage
             if (logger.LogEnabled()) logger.Log($"[ClientObjectManager] Instantiate Prefab for netid:{msg.NetId}, hash:{msg.PrefabHash}, prefab:{prefab.ResourceName}");
 
             var clone = prefab.Instantiate();
-            GetTree().Root.AddChild(clone);
+            var parent = SpawnParent ?? GetTree().Root;
+            parent.AddChild(clone);
 
             var spawnValues = msg.SpawnValues;
             if (clone is Node3D clone3d)
