@@ -15,7 +15,7 @@ namespace Mirage.Logging
         /// <summary>
         /// logHandler used for new loggers
         /// </summary>
-        private static Func<string, ILogHandler> createLoggerForType = _ => Debug.unityLogger;
+        private static Func<string, ILogHandler> createLoggerForType = _ => new StandaloneLogger();
         private static LogType DefaultLogLevel = LogType.Warning;
 
         public static ILogger GetLogger<T>(LogType? defaultLogLevel = default)
