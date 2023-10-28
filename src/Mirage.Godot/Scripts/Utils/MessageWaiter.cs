@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Mirage.AsyncTasks;
 
 namespace Mirage
 {
@@ -38,7 +39,7 @@ namespace Mirage
                 if (_received || !_client.IsConnected)
                     break;
 
-                await Task.Delay(1);
+                await GoTask.Yield();
             }
 
             // check _client.IsConnected again here, incase we disconnected after _receiving 

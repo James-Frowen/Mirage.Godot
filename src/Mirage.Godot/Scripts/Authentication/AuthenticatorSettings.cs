@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Godot;
+using Mirage.AsyncTasks;
 using Mirage.Logging;
 
 namespace Mirage.Authentication
@@ -106,7 +107,7 @@ namespace Mirage.Authentication
 
             try
             {
-                var timeout = Task.Delay(TimeSpan.FromSeconds(TimeoutSeconds));
+                var timeout = GoTask.Delay(TimeoutSeconds * 1000);
                 var completion = taskCompletion.Task;
 
                 var winner = await Task.WhenAny(completion, timeout);
