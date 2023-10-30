@@ -1,16 +1,20 @@
-using Godot;
 using Mirage.Authentication;
 
 namespace Mirage.Authenticators
 {
     public partial class BasicAuthenticator : NetworkAuthenticator<BasicAuthenticator.JoinMessage>
     {
-        [Export] public string ServerCode;
+        private BasicAuthenticatorFactory _settings;
+
+        public BasicAuthenticator(BasicAuthenticatorFactory settings)
+        {
+            _settings = settings;
+        }
 
         // called on server to validate
         protected override AuthenticationResult Authenticate(NetworkPlayer player, JoinMessage message)
         {
-            if (ServerCode == message.ServerCode)
+            if (_settings.ServerCode == message.ServerCode)
             {
                 return AuthenticationResult.CreateSuccess(this, null);
             }
@@ -26,7 +30,7 @@ namespace Mirage.Authenticators
             var message = new JoinMessage
             {
                 // use the argument or field if null
-                ServerCode = serverCode ?? ServerCode
+                ServerCode = serverCode ?? _settings.ServerCode
             };
 
             SendAuthentication(client, message);

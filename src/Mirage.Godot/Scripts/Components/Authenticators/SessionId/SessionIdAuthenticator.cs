@@ -1,30 +1,27 @@
 using System;
 using System.Collections.Generic;
-using Godot;
 using Mirage.Authentication;
 using Mirage.Logging;
 using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
 namespace Mirage.Authenticators.SessionId
 {
-    public partial class SessionIdAuthenticator : NetworkAuthenticator<SessionKeyMessage>
+    public class SessionIdAuthenticator : NetworkAuthenticator<SessionKeyMessage>
     {
         public const string NO_KEY_ERROR = "Empty key from client";
         public const string NOT_FOUND_ERROR = "No session found";
         private static readonly ILogger logger = LogFactory.GetLogger<SessionIdAuthenticator>();
 
-        [Export(hintString: "how many bytes to use for session ID")]
-        public int SessionIDLength = 32;
-        [Export(hintString: "How long ID is valid for, in minutes. 1440 => 1 day")]
-        public int TimeoutMinutes = 1440;
-        private RandomNumberGenerator _rng;
+        private readonly SessionIdAuthenticatorFactory _settings;
+        private readonly RandomNumberGenerator _rng;
 
-        public override void _Ready()
+        public SessionIdAuthenticator(SessionIdAuthenticatorFactory settings)
         {
+            _settings = settings;
             _rng = RandomNumberGenerator.Create();
         }
 
-        public override void _ExitTree()
+        ~SessionIdAuthenticator()
         {
             _rng.Dispose();
         }
@@ -86,7 +83,7 @@ namespace Mirage.Authenticators.SessionId
             // create new key
             var key = GenerateSessionKey();
             // set new timeout
-            session.Timeout = DateTime.Now.AddMinutes(TimeoutMinutes);
+            session.Timeout = DateTime.Now.AddMinutes(_settings.TimeoutMinutes);
 
             // set lookup with new key
             _sessions[key] = session;
@@ -96,7 +93,7 @@ namespace Mirage.Authenticators.SessionId
 
         private SessionKey GenerateSessionKey()
         {
-            var key = new byte[SessionIDLength];
+            var key = new byte[_settings.SessionIDLength];
             _rng.GetBytes(key);
             return new SessionKey(key);
         }

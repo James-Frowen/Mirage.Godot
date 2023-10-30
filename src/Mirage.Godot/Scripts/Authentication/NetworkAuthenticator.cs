@@ -10,14 +10,22 @@ namespace Mirage.Authentication
         string AuthenticatorName { get; }
     }
 
-    public abstract partial class NetworkAuthenticator : Node, INetworkAuthenticator
+    /// <summary>
+    /// Godot doesn't allow generic base types for nodes, so use a Factory node to Create the Authenticato
+    /// </summary>
+    public abstract partial class AuthenticatorFactory : Node
+    {
+        public abstract NetworkAuthenticator CreateAuthenticator();
+    }
+
+    public abstract class NetworkAuthenticator : INetworkAuthenticator
     {
         public virtual string AuthenticatorName => GetType().Name;
 
         internal abstract void Setup(MessageHandler messageHandler, Action<NetworkPlayer, AuthenticationResult> afterAuth);
     }
 
-    public abstract partial class NetworkAuthenticator<T> : NetworkAuthenticator, INetworkAuthenticator
+    public abstract class NetworkAuthenticator<T> : NetworkAuthenticator, INetworkAuthenticator
     {
         private Action<NetworkPlayer, AuthenticationResult> _afterAuth;
 

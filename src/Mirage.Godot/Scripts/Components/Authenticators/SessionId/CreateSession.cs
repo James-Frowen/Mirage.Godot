@@ -13,9 +13,11 @@ namespace Mirage.Authenticators.SessionId
 
         [Export] public NetworkServer Server;
         [Export] public NetworkClient Client;
-        [Export] public SessionIdAuthenticator Authenticator;
+        [Export] public SessionIdAuthenticatorFactory Factory;
         [Export] public bool AutoRefreshSession = true;
         private bool _sentRefresh = false;
+
+        private SessionIdAuthenticator Authenticator => Factory.Authenticator;
 
         public override void _Ready()
         {
@@ -81,7 +83,7 @@ namespace Mirage.Authenticators.SessionId
                 var session = new ClientSession
                 {
                     Key = key,
-                    Timeout = DateTime.Now.AddMinutes(Authenticator.TimeoutMinutes),
+                    Timeout = DateTime.Now.AddMinutes(Factory.TimeoutMinutes),
                 };
 
                 Authenticator.ClientIdStore.StoreSession(session);
@@ -114,7 +116,7 @@ namespace Mirage.Authenticators.SessionId
             if (!Authenticator.ClientIdStore.TryGetSession(out var session))
                 return;
 
-            if (ShouldRefresh(Authenticator.TimeoutMinutes, session.Timeout))
+            if (ShouldRefresh(Factory.TimeoutMinutes, session.Timeout))
             {
                 if (logger.LogEnabled()) logger.Log("Refreshing token before timeout, Requesting Session now");
 
