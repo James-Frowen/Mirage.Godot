@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Godot;
 using Mirage.Serialization;
 
 namespace Mirage.Authentication
@@ -8,14 +7,6 @@ namespace Mirage.Authentication
     public interface INetworkAuthenticator
     {
         string AuthenticatorName { get; }
-    }
-
-    /// <summary>
-    /// Godot doesn't allow generic base types for nodes, so use a Factory node to Create the Authenticato
-    /// </summary>
-    public abstract partial class AuthenticatorFactory : Node
-    {
-        public abstract NetworkAuthenticator CreateAuthenticator();
     }
 
     public abstract class NetworkAuthenticator : INetworkAuthenticator

@@ -18,7 +18,7 @@ namespace Mirage.Authentication
         public bool RequireHostToAuthenticate;
 
         [Export(hintString: "List of Authenticators allowed, User can use any of them")]
-        public AuthenticatorFactory[] AuthenticatorFactories;
+        public Node[] AuthenticatorFactories;
         public NetworkAuthenticator[] Authenticators;
 
         private readonly Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>> _pending = new Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>>();
@@ -31,7 +31,7 @@ namespace Mirage.Authentication
             Authenticators = new NetworkAuthenticator[AuthenticatorFactories.Length];
             for (var i = 0; i < AuthenticatorFactories.Length; i++)
             {
-                Authenticators[i] = AuthenticatorFactories[i].CreateAuthenticator();
+                Authenticators[i] = ((AuthenticatorFactory)AuthenticatorFactories[i]).CreateAuthenticator();
             }
         }
 
