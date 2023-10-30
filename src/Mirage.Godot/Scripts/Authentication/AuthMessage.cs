@@ -3,7 +3,7 @@
 namespace Mirage.Authentication
 {
     /// <summary>
-    /// Wrapper message around auth message sent by a <see cref="NetworkAuthenticator"/>
+    /// Wrapper message around auth message sent by a <see cref="NetworkAuthenticatorBase"/>
     /// <para>
     /// This type is used to that it can be receive before player is authenticated.
     /// ALl AuthMessage will be handled by an Authenticator instead of the normal message handler

@@ -18,12 +18,20 @@ namespace Mirage.Authentication
         public bool RequireHostToAuthenticate;
 
         [Export(hintString: "List of Authenticators allowed, User can use any of them")]
-        public NetworkAuthenticator[] Authenticators = new NetworkAuthenticator[0];
+        public Node[] AuthenticatorNodes;
+        public NetworkAuthenticatorBase[] Authenticators;
 
         private readonly Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>> _pending = new Dictionary<NetworkPlayer, TaskCompletionSource<AuthenticationResult>>();
 
         private MessageHandler _authHandler;
         private NetworkServer _server;
+
+        public override void _Ready()
+        {
+            Authenticators = new NetworkAuthenticatorBase[AuthenticatorNodes.Length];
+            for (var i = 0; i < AuthenticatorNodes.Length; i++)
+                Authenticators[i] = (NetworkAuthenticatorBase)AuthenticatorNodes[i];
+        }
 
         public void Setup(NetworkServer server)
         {

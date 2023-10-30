@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Godot;
 using Mirage.Serialization;
 
 namespace Mirage.Authentication
@@ -10,14 +9,7 @@ namespace Mirage.Authentication
         string AuthenticatorName { get; }
     }
 
-    public abstract partial class NetworkAuthenticator : Node, INetworkAuthenticator
-    {
-        public virtual string AuthenticatorName => GetType().Name;
-
-        internal abstract void Setup(MessageHandler messageHandler, Action<NetworkPlayer, AuthenticationResult> afterAuth);
-    }
-
-    public abstract partial class NetworkAuthenticator<T> : NetworkAuthenticator, INetworkAuthenticator
+    public abstract partial class NetworkAuthenticator<T> : NetworkAuthenticatorBase, INetworkAuthenticator
     {
         private Action<NetworkPlayer, AuthenticationResult> _afterAuth;
 
