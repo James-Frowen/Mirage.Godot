@@ -21,6 +21,7 @@ Documentation for the unity version of Mirage can be found at [https://miragenet
 
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
 2) Copy `src/Mirage.Godot/Scripts` into your godot project
+    - Make sure to create c# solution in godot, [this page](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) goes over the basics for using c# inside godot
 3) In your project's main `.csproj` add reference to:
     - `Mirage.Logging.csproj`
     - `Mirage.SocketLayer.csproj`
