@@ -45,7 +45,7 @@ namespace Mirage.Weaver
             // have to resolve to get typedef, then get the module
             var resolved = typeInMirage.Resolve();
             if (resolved == null)
-                throw new Exception("Cuild not find Mirage main module");
+                throw new Exception("Could not find Mirage main module");
             mirageModule = resolved.Module;
         }
 
