@@ -15,6 +15,12 @@ namespace Example1
 
         [SyncVar] private float lookAngle;
 
+        
+        [SyncVar]
+        // used to check generic dictionary writer works
+        private Godot.Collections.Dictionary<string, int> example_dictionary;
+
+
         private Vector3 _targetVelocity = Vector3.Zero;
         private CharacterBody3D _body;
 

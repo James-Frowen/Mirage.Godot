@@ -18,7 +18,7 @@ namespace Mirage.Weaver
         }
 
         protected readonly Dictionary<TypeReference, MethodReference> funcs = new Dictionary<TypeReference, MethodReference>(new TypeReferenceComparer());
-        protected readonly Dictionary<TypeDefinition, MethodReference> collectionMethod = new Dictionary<TypeDefinition, MethodReference>();
+        protected readonly Dictionary<TypeDefinition, MethodReference> collectionMethods = new Dictionary<TypeDefinition, MethodReference>();
         private readonly IWeaverLogger logger;
         protected readonly ModuleDefinition module;
 
@@ -59,17 +59,17 @@ namespace Mirage.Weaver
 
         public void RegisterCollectionMethod(TypeDefinition dataType, MethodReference methodReference)
         {
-            if (collectionMethod.ContainsKey(dataType))
+            if (collectionMethods.ContainsKey(dataType))
             {
                 logger.Warning(
                     $"Registering a {FunctionTypeLog} for {dataType.FullName} when one already exists\n" +
-                    $"  old:{collectionMethod[dataType].FullName}\n" +
+                    $"  old:{collectionMethods[dataType].FullName}\n" +
                     $"  new:{methodReference.FullName}",
                     methodReference.Resolve());
             }
 
             Log($"Register Collection Method {FunctionTypeLog} for {dataType.FullName}, method:{methodReference.FullName}");
-            collectionMethod[dataType] = methodReference;
+            collectionMethods[dataType] = methodReference;
         }
 
         /// <summary>
@@ -164,18 +164,20 @@ namespace Mirage.Weaver
                 }
                 var elementType = typeReference.GetElementType();
                 var arrayMethod = module.ImportReference(ArrayExpression);
-                return GenerateCollectionFunction(typeReference, elementType, arrayMethod);
+                return GenerateCollectionFunction(typeReference, new List<TypeReference> { elementType }, arrayMethod);
             }
 
             var typeDefinition = typeReference.Resolve();
 
             // check for collections
-            if (collectionMethod.TryGetValue(typeDefinition, out var collectionMethod))
+            if (collectionMethods.TryGetValue(typeDefinition, out var collectionMethod))
             {
                 var genericInstance = (GenericInstanceType)typeReference;
-                var elementType = genericInstance.GenericArguments[0];
+                var elementTypes = new List<TypeReference>();
+                foreach (var type in genericInstance.GenericArguments)
+                    elementTypes.Add(type);
 
-                return GenerateCollectionFunction(typeReference, elementType, collectionMethod);
+                return GenerateCollectionFunction(typeReference, elementTypes, collectionMethod);
             }
 
             // check for invalid types
@@ -240,7 +242,7 @@ namespace Mirage.Weaver
         protected abstract MethodReference GetGenericFunction();
 
         protected abstract MethodReference GenerateEnumFunction(TypeReference typeReference);
-        protected abstract MethodReference GenerateCollectionFunction(TypeReference typeReference, TypeReference elementType, MethodReference collectionMethod);
+        protected abstract MethodReference GenerateCollectionFunction(TypeReference typeReference, List<TypeReference> elementTypes, MethodReference collectionMethod);
 
         protected abstract Expression<Action> ArrayExpression { get; }
 

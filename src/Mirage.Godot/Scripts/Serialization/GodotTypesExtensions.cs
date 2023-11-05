@@ -50,6 +50,7 @@ namespace Mirage.Serialization
 
     public static class GodotCollectionExtensions
     {
+        [WeaverSerializeCollection]
         public static void WriteGodotArray<[MustBeVariant] T>(this NetworkWriter writer, Godot.Collections.Array<T> array)
         {
             CollectionExtensions.WriteCountPlusOne(writer, array?.Count);
@@ -62,6 +63,7 @@ namespace Mirage.Serialization
                 writer.Write(array[i]);
         }
 
+        [WeaverSerializeCollection]
         public static void WriteGodotDictionary<[MustBeVariant] TKey, [MustBeVariant] TValue>(this NetworkWriter writer, Godot.Collections.Dictionary<TKey, TValue> dictionary)
         {
             CollectionExtensions.WriteCountPlusOne(writer, dictionary?.Count);
@@ -77,6 +79,7 @@ namespace Mirage.Serialization
         }
 
 
+        [WeaverSerializeCollection]
         public static Godot.Collections.Array<T> ReadGodotArray<[MustBeVariant] T>(this NetworkReader reader)
         {
             var hasValue = CollectionExtensions.ReadCountPlusOne(reader, out var length);
@@ -94,6 +97,7 @@ namespace Mirage.Serialization
             return result;
         }
 
+        [WeaverSerializeCollection]
         public static Godot.Collections.Dictionary<TKey, TValue> ReadGodotDictionary<[MustBeVariant] TKey, [MustBeVariant] TValue>(this NetworkReader reader)
         {
             var hasValue = CollectionExtensions.ReadCountPlusOne(reader, out var length);
