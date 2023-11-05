@@ -170,14 +170,12 @@ namespace Mirage.Weaver
             var typeDefinition = typeReference.Resolve();
 
             // check for collections
-            var isCollection = collectionMethod.TryGetValue(typeDefinition, out var collectionMethohd);
-            Console.WriteLine($"[CollectionMethod] {typeReference} isCollection={isCollection}");
-            if (isCollection)
+            if (collectionMethod.TryGetValue(typeDefinition, out var collectionMethod))
             {
                 var genericInstance = (GenericInstanceType)typeReference;
                 var elementType = genericInstance.GenericArguments[0];
 
-                return GenerateCollectionFunction(typeReference, elementType, collectionMethohd);
+                return GenerateCollectionFunction(typeReference, elementType, collectionMethod);
             }
 
             // check for invalid types
