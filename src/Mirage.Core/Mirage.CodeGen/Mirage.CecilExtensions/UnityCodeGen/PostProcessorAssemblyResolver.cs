@@ -17,6 +17,8 @@ namespace Mirage.CodeGen
         private readonly FoundAssembly[] _foundAssemblies;
         private readonly string[] _hintDirectories;
 
+        private readonly DefaultAssemblyResolver _defaultResolver = new DefaultAssemblyResolver();
+        private readonly ReaderParameters _defaultReadParams = new ReaderParameters(ReadingMode.Deferred);
 
         private class FoundAssembly
         {
@@ -81,7 +83,12 @@ namespace Mirage.CodeGen
             }
 
             if (!TryFindFile(name.Name, out var fileName))
-                return null;
+            {
+                // if we fail to resolve the path, then use the default resolving instead
+                // the default resolving knows how to find system types
+                var defaultResult = _defaultResolver.Resolve(name, parameters ?? _defaultReadParams);
+                return defaultResult;
+            }
 
             var lastWriteTime = File.GetLastWriteTime(fileName);
 
