@@ -4,7 +4,8 @@ using Mirage.Logging;
 
 namespace Mirage
 {
-    public class GodotLogger : ILogHandler
+    [GlobalClass]
+    public class GodotLogger : Node, ILogHandler
     {
         public void LogException(Exception exception)
         {
