@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://d3g3tl662iye2"]
+
+[ext_resource type="Script" path="res://Mirage.Godot/Objects/NetworkIdentity.cs" id="1_od2vu"]
+[ext_resource type="Script" path="res://Scripts/NetworkTransform2D.cs" id="2_ctluj"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_khk7h"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_us7oq"]
+
+[node name="Player2d" type="CharacterBody2D"]
+
+[node name="NetworkIdentity" type="Node" parent="." node_paths=PackedStringArray("_root")]
+script = ExtResource("1_od2vu")
+_root = NodePath("..")
+
+[node name="NetworkTransform2D" type="Node" parent="." node_paths=PackedStringArray("_target")]
+script = ExtResource("2_ctluj")
+_target = NodePath("..")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(12, 12)
+texture = SubResource("PlaceholderTexture2D_khk7h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_us7oq")

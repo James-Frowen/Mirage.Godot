@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://ch3xptccnn3ed"]
+
+[ext_resource type="PackedScene" uid="uid://miuh5bbud7ui" path="res://Prefabs/network_manager.tscn" id="1_kbcij"]
+[ext_resource type="Script" path="res://Mirage.Godot/Components/CharacterSpawner.cs" id="2_q1ghm"]
+[ext_resource type="PackedScene" uid="uid://d3g3tl662iye2" path="res://Prefabs/Player2d.tscn" id="3_lnfex"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkHud.cs" id="5_rcbed"]
+
+[sub_resource type="Gradient" id="Gradient_xuwl1"]
+offsets = PackedFloat32Array(0, 0.378453, 0.522099, 1)
+colors = PackedColorArray(0.25, 0.291667, 0.5, 1, 0.346238, 0.536175, 0.968254, 1, 0.352763, 0.552752, 1, 1, 0, 0, 0.34, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_oq0vj"]
+gradient = SubResource("Gradient_xuwl1")
+fill_from = Vector2(0, 1)
+fill_to = Vector2(0, 0)
+
+[node name="World2" type="Node"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_oq0vj")
+
+[node name="NetworkManager" parent="." instance=ExtResource("1_kbcij")]
+EnableAllLogs = true
+
+[node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("Server", "ServerObjectManager")]
+script = ExtResource("2_q1ghm")
+Server = NodePath("../NetworkServer")
+ServerObjectManager = NodePath("../ServerObjectManager")
+SpawnOnConnect = true
+Player = ExtResource("3_lnfex")
+
+[node name="NetworkHud" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_manager", "_socketFactory")]
+script = ExtResource("5_rcbed")
+_manager = NodePath("..")
+_socketFactory = NodePath("../UdpSocketFactory")
+
+[editable path="NetworkManager"]

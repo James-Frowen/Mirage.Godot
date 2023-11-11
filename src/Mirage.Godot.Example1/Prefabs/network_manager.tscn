@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://miuh5bbud7ui"]
+[gd_scene load_steps=10 format=3 uid="uid://miuh5bbud7ui"]
 
 [ext_resource type="Script" path="res://Mirage.Godot/Components/DebugNetworkManager.cs" id="1_f8xxq"]
 [ext_resource type="Script" path="res://Mirage.Godot/NetworkServer.cs" id="2_0j8ur"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Mirage.Godot/Udp/UdpSocketFactory.cs" id="6_eqiy6"]
 [ext_resource type="PackedScene" uid="uid://nea4bwm2wwpj" path="res://Prefabs/Player.tscn" id="6_mtk2s"]
 [ext_resource type="PackedScene" uid="uid://casfcv0sbio2i" path="res://Prefabs/Mob.tscn" id="7_ai56d"]
+[ext_resource type="PackedScene" uid="uid://d3g3tl662iye2" path="res://Prefabs/Player2d.tscn" id="8_sth2g"]
 
 [node name="NetworkManager" type="Node" node_paths=PackedStringArray("Server", "ServerObjectManager", "Client", "ClientObjectManager", "SocketFactory")]
 script = ExtResource("1_f8xxq")
@@ -33,7 +34,7 @@ ObjectManager = NodePath("../ClientObjectManager")
 
 [node name="ClientObjectManager" type="Node" parent="."]
 script = ExtResource("5_yef7t")
-PackedScenes = Array[PackedScene]([ExtResource("6_mtk2s"), ExtResource("7_ai56d")])
+PackedScenes = Array[PackedScene]([ExtResource("6_mtk2s"), ExtResource("7_ai56d"), ExtResource("8_sth2g")])
 
 [node name="UdpSocketFactory" type="Node" parent="."]
 script = ExtResource("6_eqiy6")
