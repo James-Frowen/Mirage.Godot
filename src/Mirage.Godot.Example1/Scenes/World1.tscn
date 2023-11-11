@@ -40,6 +40,7 @@ point_count = 5
 script = ExtResource("2_pnjea")
 Server = NodePath("../NetworkServer")
 ServerObjectManager = NodePath("../ServerObjectManager")
+SpawnOnConnect = true
 Player = ExtResource("2_04pam")
 
 [node name="NetworkScene" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_sceneObjects")]
@@ -103,11 +104,12 @@ curve = SubResource("Curve3D_tsxck")
 [node name="SpawnLocation" type="PathFollow3D" parent="SpawnPath"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -25, 0, 25)
 
-[node name="Spawner" type="Node" parent="SpawnPath" node_paths=PackedStringArray("Path", "Location")]
+[node name="Spawner" type="Node" parent="SpawnPath" node_paths=PackedStringArray("Path", "Location", "_networkManager")]
 script = ExtResource("5_pft5t")
 Path = NodePath("..")
 Location = NodePath("../SpawnLocation")
 MobScene = ExtResource("6_ro56k")
+_networkManager = NodePath("../../NetworkManager")
 
 [node name="ModTimer" type="Timer" parent="SpawnPath/Spawner"]
 wait_time = 0.5

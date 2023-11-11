@@ -57,6 +57,8 @@ namespace Example1
         private void SendUpdateRelayed(Vector3 pos, Quaternion rot)
         {
             if (logger.LogEnabled()) logger.Log($"RPC ToServer: {Identity.NetId}, {pos} {rot}");
+            _targetPos = pos;
+            _targetRot = rot;
             SendUpdate(pos, rot);
         }
         [ClientRpc]
@@ -71,7 +73,8 @@ namespace Example1
         {
             if (logger.LogEnabled()) logger.Log($"MoveTowards: {Identity.NetId}, from[{_target.Position},{_target.Quaternion}] to[{_targetPos},{_targetRot}]");
             _target.Position = _targetPos;
-            _target.Quaternion = _targetRot;
+            if (_targetRot != default) // dont set if rotation is all zeros
+                _target.Quaternion = _targetRot;
         }
     }
 }

@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://casfcv0sbio2i"]
+[gd_scene load_steps=6 format=3 uid="uid://casfcv0sbio2i"]
 
 [ext_resource type="PackedScene" uid="uid://8lxn7btvlmnd" path="res://art/mob.glb" id="1_h4x7r"]
 [ext_resource type="Script" path="res://Scripts/Mob.cs" id="1_lg4te"]
+[ext_resource type="Script" path="res://Mirage.Godot/Objects/NetworkIdentity.cs" id="3_acypq"]
+[ext_resource type="Script" path="res://Scripts/NetworkTransform3D.cs" id="4_esc6j"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vy0ck"]
 size = Vector3(2, 1.2, 3)
@@ -20,5 +22,13 @@ shape = SubResource("BoxShape3D_vy0ck")
 [node name="VisibleOnScreenNotifier3D" type="VisibleOnScreenNotifier3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.319082)
 aabb = AABB(-1.2, -1, -1.6714, 2.4, 2, 3.3428)
+
+[node name="NetworkIdentity" type="Node" parent="." node_paths=PackedStringArray("_root")]
+script = ExtResource("3_acypq")
+_root = NodePath("..")
+
+[node name="NetworkTransform" type="Node" parent="." node_paths=PackedStringArray("_target")]
+script = ExtResource("4_esc6j")
+_target = NodePath("..")
 
 [connection signal="screen_exited" from="VisibleOnScreenNotifier3D" to="." method="OnVisibilityNotifierScreenExited"]

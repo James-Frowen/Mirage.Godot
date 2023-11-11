@@ -15,7 +15,7 @@ namespace Example1
 
         [SyncVar] private float lookAngle;
 
-        
+
         [SyncVar]
         // used to check generic dictionary writer works
         private Godot.Collections.Dictionary<string, int> example_dictionary;
@@ -55,6 +55,7 @@ namespace Example1
             else
             {
                 _body.Quaternion = new Quaternion(Vector3.Up, lookAngle);
+                _body.MoveAndSlide();
             }
         }
 
