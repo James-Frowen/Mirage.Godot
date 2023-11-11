@@ -126,7 +126,7 @@ namespace Mirage
         {
             var shouldSync = SyncSettings.ShouldSyncFrom(Identity, true);
 
-            if (logger.LogEnabled()) logger.Log($"Settings SyncObject sync on to {shouldSync} for {this}");
+            if (logger.LogEnabled()) logger.Log($"Settings SyncObject sync on to {shouldSync} for {Node?.Name}");
             for (var i = 0; i < syncObjects.Count; i++)
             {
                 syncObjects[i].SetShouldSyncFrom(shouldSync);
