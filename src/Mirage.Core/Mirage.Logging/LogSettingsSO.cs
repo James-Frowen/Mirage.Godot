@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Mirage.Logging.LogSettingsSO;
 
 namespace Mirage.Logging
 {
@@ -15,6 +16,7 @@ namespace Mirage.Logging
         {
             public string Name;
             public string Namespace;
+            public LogType logLevel;
 
             private string _fullNameCache;
             public string FullName
@@ -38,8 +40,6 @@ namespace Mirage.Logging
                 else
                     return $"{space}.{name}";
             }
-
-            public LogType logLevel;
 
             public LoggerSettings(string name, string @namespace, LogType level)
             {
@@ -90,26 +90,26 @@ namespace Mirage.Logging
     {
         public static void SaveFromLogFactory(this LogSettingsSO settings)
         {
-            var dictionary = LogFactory._loggers;
             if (settings == null)
             {
                 Debug.LogWarning("Could not SaveFromDictionary because LogSettings were null");
                 return;
             }
 
-            settings.LogLevels.Clear();
+            settings.LogLevels.SaveFromLogFactory();
+        }
+        public static void SaveFromLogFactory(this List<LoggerSettings> settings)
+        {
+            settings.Clear();
 
+            var dictionary = LogFactory._loggers;
             foreach (var kvp in dictionary)
             {
-                settings.LogLevels.Add(new LogSettingsSO.LoggerSettings(kvp.Key, kvp.Value.filterLogType));
+                settings.Add(new LogSettingsSO.LoggerSettings(kvp.Key, kvp.Value.filterLogType));
             }
-
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(settings);
-#endif
         }
 
-        public static void LoadIntoLogFactory(this LogSettingsSO settings)
+        public static void LoadIntoLogFactory(this List<LoggerSettings> settings)
         {
             if (settings == null)
             {
@@ -117,13 +117,13 @@ namespace Mirage.Logging
                 return;
             }
 
-            for (var i = 0; i < settings.LogLevels.Count; i++)
+            for (var i = 0; i < settings.Count; i++)
             {
-                var logLevel = settings.LogLevels[i];
+                var logLevel = settings[i];
                 var key = logLevel.FullName;
                 if (key == null)
                 {
-                    settings.LogLevels.RemoveAt(i);
+                    settings.RemoveAt(i);
                     i--;
                     Debug.LogWarning("Found null key in log settings, removing item");
                     continue;
