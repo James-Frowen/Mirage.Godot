@@ -28,7 +28,10 @@ namespace Mirage
 
                     GD.Print($"Spawning at {node3d.Position}");
                 }
-
+                if (clone is Node2D node2d)
+                {
+                    node2d.Position = new Vector2(600, 200);
+                }
 
                 GetTree().Root.AddChild(clone);
 
