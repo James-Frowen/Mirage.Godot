@@ -66,7 +66,7 @@ namespace Mirage.Events
     /// </example>
     public sealed class AddLateEvent : AddLateEventBase, IAddLateEvent
     {
-        private static List<Action> _tmp = new List<Action>();
+        private List<Action> _tmp = new List<Action>();
         public List<Action> _event = new List<Action>();
 
         public void AddListener(Action handler)
@@ -105,7 +105,7 @@ namespace Mirage.Events
     /// <typeparam name="TEvent">UnityEvent</typeparam>
     public class AddLateEvent<T0> : AddLateEventBase, IAddLateEvent<T0>
     {
-        private static List<Action<T0>> _tmp = new List<Action<T0>>();
+        private List<Action<T0>> _tmp = new List<Action<T0>>();
         public List<Action<T0>> _event = new List<Action<T0>>();
 
         private T0 _arg0;
@@ -147,7 +147,7 @@ namespace Mirage.Events
     /// <typeparam name="T1"></typeparam>
     public class AddLateEvent<T0, T1> : AddLateEventBase, IAddLateEvent<T0, T1>
     {
-        private static List<Action<T0, T1>> _tmp = new List<Action<T0, T1>>();
+        private List<Action<T0, T1>> _tmp = new List<Action<T0, T1>>();
         public List<Action<T0, T1>> _event = new List<Action<T0, T1>>();
 
         private T0 _arg0;
