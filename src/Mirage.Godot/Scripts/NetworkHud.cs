@@ -4,6 +4,7 @@ using Mirage.Udp;
 
 namespace Mirage
 {
+    [GlobalClass]
     public partial class NetworkHud : Node
     {
         [Export] private NetworkManager _manager;
