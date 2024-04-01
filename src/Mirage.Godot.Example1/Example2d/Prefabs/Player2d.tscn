@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://bg0p7ddm0edm"]
+
+[ext_resource type="Script" path="res://Mirage.Godot/Objects/NetworkIdentity.cs" id="1_ivcl6"]
+[ext_resource type="Script" path="res://NetworkPositionSync/SyncPositionBehaviour.cs" id="2_guhnv"]
+[ext_resource type="Script" path="res://Example2d/Scripts/MovePlayer2d.cs" id="3_c5717"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_f5svo"]
+
+[node name="Player2d" type="Node2D"]
+
+[node name="NetworkIdentity" type="Node" parent="."]
+script = ExtResource("1_ivcl6")
+
+[node name="SyncPositionBehaviour" type="Node" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("2_guhnv")
+target = NodePath("..")
+clientAuthority = true
+
+[node name="MovePlayer2d" type="Node" parent="." node_paths=PackedStringArray("root")]
+script = ExtResource("3_c5717")
+speed = 80.0
+moveRadius = 200.0
+root = NodePath("..")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(30, 30)
+texture = SubResource("PlaceholderTexture2D_f5svo")

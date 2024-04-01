@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3 uid="uid://caun6vmr2vpnf"]
+
+[ext_resource type="PackedScene" uid="uid://miuh5bbud7ui" path="res://Prefabs/network_manager.tscn" id="1_0pplq"]
+[ext_resource type="Script" path="res://NetworkPositionSync/SyncPositionSystem.cs" id="2_g7qd7"]
+[ext_resource type="Script" path="res://Example2d/Scripts/Manager2d.cs" id="3_fm2wy"]
+[ext_resource type="PackedScene" uid="uid://bg0p7ddm0edm" path="res://Example2d/Prefabs/Player2d.tscn" id="4_6omh3"]
+[ext_resource type="PackedScene" uid="uid://cvi6cc3gurby7" path="res://Example2d/Prefabs/Cube2d.tscn" id="5_ylfgy"]
+[ext_resource type="Script" path="res://Mirage.Godot/NetworkHud.cs" id="6_7xq5x"]
+
+[node name="World2d" type="Node2D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 12.0
+offset_top = 51.0
+offset_right = 52.0
+offset_bottom = 91.0
+
+[node name="NetworkHud" type="Node" parent="CanvasLayer/Control" node_paths=PackedStringArray("_manager", "_socketFactory")]
+script = ExtResource("6_7xq5x")
+_manager = NodePath("../../../NetworkManager")
+_socketFactory = NodePath("../../../NetworkManager/UdpSocketFactory")
+
+[node name="NetworkManager" parent="." instance=ExtResource("1_0pplq")]
+
+[node name="SyncPositionSystem" type="Node" parent="NetworkManager" node_paths=PackedStringArray("Client", "Server")]
+script = ExtResource("2_g7qd7")
+Client = NodePath("../NetworkClient")
+Server = NodePath("../NetworkServer")
+
+[node name="Manager2d" type="Node" parent="NetworkManager" node_paths=PackedStringArray("NetworkManager")]
+script = ExtResource("3_fm2wy")
+NetworkManager = NodePath("..")
+playerPrefab = ExtResource("4_6omh3")
+cubePrefab = ExtResource("5_ylfgy")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[editable path="NetworkManager"]
