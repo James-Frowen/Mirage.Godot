@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 using Mirage.Collections;
@@ -105,6 +106,42 @@ namespace Mirage
         protected internal void InitSyncObject(ISyncObject syncObject)
         {
             syncObjects.Add(syncObject);
+        }
+
+        public struct Id : IEquatable<Id>
+        {
+            public readonly uint NetId;
+            public readonly int ComponentIndex;
+
+            public Id(uint netId, int componentIndex)
+            {
+                NetId = netId;
+                ComponentIndex = componentIndex;
+            }
+
+            public Id(NetworkBehaviour behaviour)
+            {
+                NetId = behaviour.Identity.NetId;
+                ComponentIndex = behaviour.ComponentIndex;
+            }
+
+            public override int GetHashCode()
+            {
+                return ((int)NetId * 256) + ComponentIndex;
+            }
+
+            public bool Equals(Id other)
+            {
+                return (NetId == other.NetId) && (ComponentIndex == other.ComponentIndex);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is Id id)
+                    return Equals(id);
+                else
+                    return false;
+            }
         }
     }
 }
