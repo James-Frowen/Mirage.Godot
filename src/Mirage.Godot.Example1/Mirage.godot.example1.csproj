@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.1.1">
+<Project Sdk="Godot.NET.Sdk/4.3.0">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -8,7 +8,6 @@
     <ProjectReference Include="..\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj" />
     <ProjectReference Include="..\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="dotnet build $(ProjectDir)/../Mirage.Core/Mirage.CodeGen/Mirage.CodeGen.csproj -c Release" />
     <Exec Command="$(ProjectDir)../Mirage.Core/Mirage.CodeGen/bin/Release/net6.0/Mirage.CodeGen.exe $(TargetPath) -force" />

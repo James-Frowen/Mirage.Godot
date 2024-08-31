@@ -33,9 +33,9 @@ Server = NodePath("../NetworkServer")
 
 [node name="Manager2d" type="Node" parent="NetworkManager" node_paths=PackedStringArray("NetworkManager")]
 script = ExtResource("3_fm2wy")
-NetworkManager = NodePath("..")
 playerPrefab = ExtResource("4_6omh3")
 cubePrefab = ExtResource("5_ylfgy")
+NetworkManager = NodePath("..")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

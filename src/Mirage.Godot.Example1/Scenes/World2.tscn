@@ -29,10 +29,10 @@ EnableAllLogs = true
 
 [node name="CharacterSpawner" type="Node" parent="NetworkManager" node_paths=PackedStringArray("Server", "ServerObjectManager")]
 script = ExtResource("2_q1ghm")
-Server = NodePath("../NetworkServer")
-ServerObjectManager = NodePath("../ServerObjectManager")
 SpawnOnConnect = true
 Player = ExtResource("3_lnfex")
+Server = NodePath("../NetworkServer")
+ServerObjectManager = NodePath("../ServerObjectManager")
 
 [node name="NetworkHud" type="Node" parent="NetworkManager" node_paths=PackedStringArray("_manager", "_socketFactory")]
 script = ExtResource("5_rcbed")
