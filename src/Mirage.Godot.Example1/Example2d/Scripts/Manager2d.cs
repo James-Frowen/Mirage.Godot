@@ -1,5 +1,5 @@
 using Godot;
-using JamesFrowen.PositionSync;
+using JamesFrowen.NetworkPositionSync;
 using Mirage;
 using Mirage.Logging;
 
