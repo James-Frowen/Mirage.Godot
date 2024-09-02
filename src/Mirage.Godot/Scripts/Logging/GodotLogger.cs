@@ -6,6 +6,11 @@ namespace Mirage
 {
     public class GodotLogger : ILogHandler
     {
+        public GodotLogger()
+        {
+            LogFactory.ReplaceLogHandler(this, true);
+        }
+
         public void LogException(Exception exception)
         {
             LogFormat(LogType.Error, "[Exception] {0}", exception);
