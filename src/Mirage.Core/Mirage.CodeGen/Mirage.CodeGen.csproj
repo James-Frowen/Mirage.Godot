@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Godot.SourceGenerators" Version="4.3.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-    <PackageReference Include="GodotSharp" Version="4.3.0" />
   </ItemGroup>
 
   <PropertyGroup>
