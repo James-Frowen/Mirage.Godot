@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cvi6cc3gurby7"]
 
 [ext_resource type="Script" path="res://Mirage.Godot/Objects/NetworkIdentity.cs" id="1_wcfy5"]
-[ext_resource type="Script" path="res://NetworkPositionSync/SyncPositionBehaviour.cs" id="2_g8o2c"]
+[ext_resource type="Script" path="res://Scripts/NetworkPositionSync/SyncPositionBehaviour.cs" id="2_g8o2c"]
 [ext_resource type="Script" path="res://Example2d/Scripts/MoveCube2d.cs" id="3_iadf8"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gdggc"]
