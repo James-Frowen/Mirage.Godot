@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Godot.SourceGenerators" Version="4.3.0" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <PackageReference Include="GodotSharp" Version="4.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GodotProjectDir>$(MSBuildProjectDirectory)</GodotProjectDir>
+  </PropertyGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.11.4" />
   </ItemGroup>
 
