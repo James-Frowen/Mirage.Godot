@@ -25,9 +25,11 @@ Documentation for the unity version of Mirage can be found at [https://miragenet
 3) In your project's main `.csproj` add reference to:
     - `Mirage.Logging.csproj`
     - `Mirage.SocketLayer.csproj`
-4) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
+4) Also add in project's main `.csproj` file:
+    - '<AllowUnsafeBlocks>true</AllowUnsafeBlocks>'    
+5) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
     - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the path easier to find
-5) Add Build Targets to your main csproj
+6) Add Build Targets to your main csproj
 ```xml
 <Project Sdk="Godot.NET.Sdk/4.1.1">
   ...
