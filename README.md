@@ -19,6 +19,8 @@ Documentation for the unity version of Mirage can be found at [https://miragenet
 
 ## Install 
 
+Requires installation of .NET 8: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
 2) Copy `src/Mirage.Godot/Scripts` into your godot project
     - Make sure to create c# solution in godot, [this page](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) goes over the basics for using c# inside godot
