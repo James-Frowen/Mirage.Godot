@@ -28,7 +28,7 @@ Requires installation of .NET 8: https://dotnet.microsoft.com/en-us/download/dot
     - `Mirage.Logging.csproj`
     - `Mirage.SocketLayer.csproj`
 4) Also add in project's main `.csproj` file:
-    - '<AllowUnsafeBlocks>true</AllowUnsafeBlocks>'    
+    - ```<AllowUnsafeBlocks>true</AllowUnsafeBlocks>```  
 5) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
     - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the path easier to find
 6) Add Build Targets to your main csproj
