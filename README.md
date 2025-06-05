@@ -19,33 +19,38 @@ Documentation for the unity version of Mirage can be found at [https://miragenet
 
 ## Install 
 
-Requires installation of .NET 8: https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+Requirements:  
+- Install .NET 8: https://dotnet.microsoft.com/en-us/download/dotnet/8.0  
+- Make sure to create c# solution in godot, [this page](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) goes over the basics for using c# inside godot
 
+The paths below assumes that your new Godot game will share the same parent directory with Mirage.Core. Please adjust the paths as needed.  
+Open a command prompt at the shared parent directory.
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
-2) Copy `src/Mirage.Godot/Scripts` into your godot project
-    - Make sure to create c# solution in godot, [this page](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) goes over the basics for using c# inside godot
-3) In your project's main `.csproj` add reference to:
-    - `Mirage.Logging.csproj`
-    - `Mirage.SocketLayer.csproj`
-4) Also add in project's main `.csproj` file:
-    - ```<AllowUnsafeBlocks>true</AllowUnsafeBlocks>```  
-5) Build CodeGen: `dotnet build Mirage.CodeGen.csproj -c Release`
-    - use `[-o|--output <OUTPUT_DIRECTORY>]` to make the path easier to find
-6) Add Build Targets to your main csproj
-```xml
-<Project Sdk="Godot.NET.Sdk/4.1.1">
-  ...
-
+2) Change directory into your Godot project. `cd godot-game-dir`
+3) Copy `Mirage.Godot/src/Mirage.Godot/Scripts` into your godot project with the following command:  
+   `cp -r ../Mirage.Godot/src/Mirage.Godot/Scripts ./`  
+5) Include the following changes to your Godot project's main `.csproj`:
+ ```
+   <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mirage.Godot\src\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj" />
+    <ProjectReference Include="..\Mirage.Godot\src\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="path/to/Mirage.CodeGen.exe $(TargetPath) -force" />
+    <Exec Command="dotnet build ..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
+    <Exec Command="..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(TargetPath) -force" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
   <Target Name="PrePublish" BeforeTargets="Publish">
-    <Exec Command="path/to/Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
+    <Exec Command="dotnet build ..\Mirage.Godot\Mirage.Core\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
+    <Exec Command="..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
     <Error Condition="$(ExitCode) == 1" />
   </Target>
 </Project>
-```
+ ```
 
 #### Notes
 
