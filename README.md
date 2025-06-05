@@ -28,7 +28,7 @@ Open a command prompt at the shared parent directory.
 1) Clone repo `git clone git@github.com:James-Frowen/Mirage.Godot.git`
 2) Change directory into your Godot project. `cd godot-game-dir`
 3) Copy `Mirage.Godot/src/Mirage.Godot/Scripts` into your godot project with the following command:  
-   `cp -r ../Mirage.Godot/src/Mirage.Godot/Scripts ./`  
+   `cp -r ../Mirage.Godot/src/Mirage.Godot/Scripts ./Mirage.Godot/Scripts`  
 5) Include the following changes to your Godot project's main `.csproj`:
  ```
    <PropertyGroup>
