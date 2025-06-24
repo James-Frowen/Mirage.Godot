@@ -42,7 +42,7 @@ Open a command prompt at the shared parent directory.
  </ItemGroup>
  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
    <Exec Command="dotnet build .\addons\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
-   <Exec Command="..\addons\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(TargetPath) -force" />
+   <Exec Command=".\addons\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(TargetPath) -force" />
    <Error Condition="$(ExitCode) == 1" />
  </Target>
  <Target Name="PrePublish" BeforeTargets="Publish">
