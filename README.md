@@ -32,23 +32,24 @@ Open a command prompt at the shared parent directory.
 5) Include the following changes to your Godot project's main `.csproj`:
  ```
    <PropertyGroup>
+    ...
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-  </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Mirage.Godot\src\Mirage.Core\Mirage.Logging\Mirage.Logging.csproj" />
-    <ProjectReference Include="..\Mirage.Godot\src\Mirage.Core\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="dotnet build ..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
-    <Exec Command="..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(TargetPath) -force" />
-    <Error Condition="$(ExitCode) == 1" />
-  </Target>
-  <Target Name="PrePublish" BeforeTargets="Publish">
-    <Exec Command="dotnet build ..\Mirage.Godot\Mirage.Core\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
-    <Exec Command="..\Mirage.Godot\src\Mirage.Core\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
-    <Error Condition="$(ExitCode) == 1" />
-  </Target>
+   <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+ </PropertyGroup>
+ <ItemGroup>
+   <ProjectReference Include=".\addons\Mirage.Logging\Mirage.Logging.csproj" />
+   <ProjectReference Include=".\addons\Mirage.SocketLayer\Mirage.SocketLayer.csproj" />
+ </ItemGroup>
+ <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+   <Exec Command="dotnet build .\addons\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
+   <Exec Command=".\addons\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(TargetPath) -force" />
+   <Error Condition="$(ExitCode) == 1" />
+ </Target>
+ <Target Name="PrePublish" BeforeTargets="Publish">
+   <Exec Command="dotnet build .\addons\Mirage.CodeGen\Mirage.CodeGen.csproj -c Release" />
+   <Exec Command=".\addons\Mirage.CodeGen\bin\Release\net8.0\Mirage.CodeGen.exe $(PublishDir)$(TargetFileName) $(TargetDir) -force" />
+   <Error Condition="$(ExitCode) == 1" />
+ </Target>
 </Project>
  ```
 
