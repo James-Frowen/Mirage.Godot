@@ -32,6 +32,8 @@ Open a command prompt at the shared parent directory.
 5) Include the following changes to your Godot project's main `.csproj`:
  ```
    <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
