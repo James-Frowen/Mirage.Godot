@@ -21,7 +21,23 @@ namespace Mirage
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies)
             {
-                foreach (var type in assembly.GetTypes())
+                Type[] types;
+                try
+                {
+                    types = assembly.GetTypes();
+                }
+                catch (ReflectionTypeLoadException e)
+                {
+                    logger.LogWarning($"Could not load types from assembly: {assembly.FullName}, skipping.");
+                    foreach (var loaderException in e.LoaderExceptions)
+                    {
+                        if (loaderException != null)
+                            logger.LogWarning($"  LoaderException: {loaderException.Message}");
+                    }
+                    continue;
+                }
+
+                foreach (var type in types)
                 {
                     if (type.Namespace != GENERATED_NAMEPACE || type.Name != GENERATED_CLASS)
                         continue;
