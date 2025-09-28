@@ -11,6 +11,7 @@ namespace Mirage
         // todo decide which of these should be extension methods vs static only
         public static bool IsServer(this INetworkNode node) => node.Identity.IsServer;
         public static bool IsClient(this INetworkNode node) => node.Identity.IsClient;
+        public static bool IsHost(this INetworkNode node) => node.Identity.IsHost;
         public static bool HasAuthority(this INetworkNode node) => node.Identity.HasAuthority;
         public static bool IsMainCharacter(this INetworkNode node) => node.Identity.IsMainCharacter;
 
