@@ -289,7 +289,11 @@ namespace Mirage
         {
             get
             {
-                _networkBehavioursCache ??= NodeHelper.FindNetworkBehaviours(this);
+                if (_networkBehavioursCache == null)
+                {
+                    if (logger.LogEnabled()) logger.Log($"Finding NetworkBehaviours for {Name}");
+                    _networkBehavioursCache = NodeHelper.FindNetworkBehaviours(this);
+                }
                 return _networkBehavioursCache;
             }
         }

@@ -37,7 +37,11 @@ namespace Mirage
         {
             get
             {
-                _identity ??= NodeHelper.GetNetworkIdentity(this);
+                if (_identity == null)
+                {
+                    if (logger.LogEnabled()) logger.Log($"Finding NetworkIdentity for {Name}");
+                    _identity = NodeHelper.GetNetworkIdentity(this);
+                }
                 return _identity;
             }
         }

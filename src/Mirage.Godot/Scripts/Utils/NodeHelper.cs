@@ -136,10 +136,11 @@ namespace Mirage
         /// <typeparam name="T"></typeparam>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static NetworkIdentity GetNetworkIdentity(Node node)
+        public static NetworkIdentity GetNetworkIdentity(Node node, bool includeChild)
         {
-            return GetNetworkIdentityInternal(node);
+            return GetNetworkIdentityInternal(node, includeChild);
         }
+
         /// <summary>
         /// Gets NetworkIdentity in first level of child
         /// </summary>
@@ -150,15 +151,18 @@ namespace Mirage
             // extension method will show up if the class is INetworkNode
             where T : Node, INetworkNode
         {
-            return GetNetworkIdentityInternal(node);
+            return GetNetworkIdentityInternal(node, includeChild: false);
         }
 
-        private static NetworkIdentity GetNetworkIdentityInternal(Node node)
+        private static NetworkIdentity GetNetworkIdentityInternal(Node node, bool includeChild)
         {
-            var identity = GetParent<NetworkIdentity>(node, includeSiblings: true);
+            NetworkIdentity identity;
+            var found = TryGetParent<NetworkIdentity>(node, includeSiblings: true, out identity)
+                || (includeChild && TryGetChild(node, out identity));
+
             if (logger.LogEnabled())
             {
-                if (identity != null)
+                if (found)
                     logger.Log($"Found {identity}");
                 else
                     logger.Log($"Failed to find NetworkIdentity");
@@ -171,7 +175,7 @@ namespace Mirage
         {
             // we write component index as byte
             // check if components are in byte.MaxRange just to be 100% sure that we avoid overflows
-            return FindNetworkBehaviours(identity, byte.MaxValue);
+            return FindNetworkBehaviours(identity.Root, byte.MaxValue);
         }
 
         /// <summary>
@@ -192,13 +196,13 @@ namespace Mirage
             {
                 var item = found[i];
                 // get the identity that the node will be using itself
-                var identity = GetNetworkIdentityInternal((Node)item);
+                var identity = GetNetworkIdentityInternal((Node)item, false);
                 if (identity == null)
                 {
                     logger.LogError($"Child node {item} found not find its NetworkIdentity");
                     found.RemoveAt(i);
                 }
-                else if (identity != searchRoot)
+                else if (identity.Root != searchRoot)
                 {
                     if (logger.LogEnabled()) logger.Log($"Child node {item} had different NetworkIdentity. SearchRoot:{searchRoot},  Child field:{identity}");
                     found.RemoveAt(i);

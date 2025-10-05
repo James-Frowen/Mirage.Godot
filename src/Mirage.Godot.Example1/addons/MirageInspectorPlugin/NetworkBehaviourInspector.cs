@@ -67,7 +67,7 @@ namespace Mirage.Editor
             // Add a separator to make it look nice
             AddCustomControl(new HSeparator());
 
-            var identity = NodeHelper.GetNetworkIdentity(node);
+            var identity = NodeHelper.GetNetworkIdentity(node, false);
 
             var grid = new GridContainer();
             grid.Columns = 2;
