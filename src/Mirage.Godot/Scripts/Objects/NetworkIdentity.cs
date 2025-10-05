@@ -99,7 +99,7 @@ namespace Mirage
     ///     </description></item>
     /// </list>
     /// </remarks>
-    [GlobalClass]
+    [GlobalClass, Tool]
     public sealed partial class NetworkIdentity : Node
     {
         private static readonly ILogger logger = LogFactory.GetLogger<NetworkIdentity>();
@@ -289,18 +289,9 @@ namespace Mirage
         {
             get
             {
-                if (_networkBehavioursCache is null)
-                {
-                    var components = FindBehaviourForThisIdentity();
-
-                    // we write component index as byte
-                    // check if components are in byte.MaxRange just to be 100% sure that we avoid overflows
-                    if (components.Length > byte.MaxValue)
-                        throw new InvalidOperationException("Only 255 NetworkBehaviours are allowed per GameObject.");
-
-                    _networkBehavioursCache = components;
-                }
-
+                // we write component index as byte
+                // check if components are in byte.MaxRange just to be 100% sure that we avoid overflows
+                _networkBehavioursCache ??= NodeHelper.FindNetworkBehaviours(Root ?? this, byte.MaxValue);
                 return _networkBehavioursCache;
             }
         }
@@ -319,46 +310,6 @@ namespace Mirage
 
                 return _networkBehavioursWithSyncVarCache;
             }
-        }
-
-        /// <summary>
-        /// Removes NetworkBehaviour that belong to another NetworkIdentity from the components array
-        /// <para>
-        ///     If there are nested NetworkIdentities then Behaviour that belong to those Identities will be found by GetComponentsInChildren if the child object is added
-        ///     before the Array is intialized. This method will check each Behaviour to make sure that the Identity is the same as the current Identity, and if it is not
-        ///     remove it from the array.
-        /// </para>
-        /// </summary>
-        /// <param name="components"></param>
-        private INetworkNode[] FindBehaviourForThisIdentity()
-        {
-            var childComponents = Root.GetComponentsInChildrenEnumerable<INetworkNode>().ToList();
-
-            // start at last so we can remove from end of array instead of start
-            for (var i = childComponents.Count - 1; i >= 0; i--)
-            {
-                var item = childComponents[i];
-                if (item.Identity != this)
-                {
-                    childComponents.RemoveAt(i);
-                }
-            }
-
-            var components = childComponents.ToArray();
-
-#if DEBUG
-            // validate the results here (just incase they are wrong)
-            // we only need to do this in debug mode because results should be right
-            foreach (var item in components)
-            {
-                // assert
-                if (item.Identity != this)
-                {
-                    logger.LogError($"Child NetworkBehaviour had a different Identity, this:{Name}, Child Identity:{item.Identity.Name}");
-                }
-            }
-#endif
-            return components;
         }
 
         private INetworkVisibility _visibility;

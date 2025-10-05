@@ -578,7 +578,7 @@ namespace Mirage
                     clone2d.Rotation = spawnValues.Rotation2d.Value;
             }
 
-            return clone.GetFirstChild<NetworkIdentity>();
+            return NodeHelper.GetChild<NetworkIdentity>(clone);
         }
 
         internal NetworkIdentity SpawnSceneObject(SpawnMessage msg)

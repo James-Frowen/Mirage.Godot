@@ -18,7 +18,7 @@ namespace Example2d
             var clone = prefab.Instantiate();
             GetTree().Root.AddChild(clone);
 
-            var identity = clone.GetNetworkIdentity();
+            var identity = NodeHelper.GetNetworkIdentity(clone);
             identity.PrefabHash = PrefabHashHelper.GetPrefabHash(prefab);
             return identity;
         }

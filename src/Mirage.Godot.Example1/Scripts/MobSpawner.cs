@@ -55,7 +55,7 @@ public partial class MobSpawner : Node
         // add to a child of this object
         AddChild(mob);
 
-        var mobIdentity = mob.GetNetworkIdentity();
+        var mobIdentity = NodeHelper.GetNetworkIdentity(mob);
         mobIdentity.PrefabHash = _prefabHash;
         _networkManager.ServerObjectManager.Spawn(mobIdentity);
     }

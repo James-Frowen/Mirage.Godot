@@ -35,7 +35,7 @@ namespace Mirage
 
                 GetTree().Root.AddChild(clone);
 
-                var identity = clone.GetNetworkIdentity();
+                var identity = NodeHelper.GetNetworkIdentity(clone);
                 identity.PrefabHash = PrefabHashHelper.GetPrefabHash(Player);
                 ServerObjectManager.AddCharacter(player, identity);
             }
