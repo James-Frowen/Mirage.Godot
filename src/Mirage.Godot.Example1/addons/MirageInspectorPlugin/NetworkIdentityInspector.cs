@@ -1,5 +1,5 @@
 #if TOOLS
-using System.Linq;
+using System.Collections.Generic;
 using Godot;
 
 namespace Mirage.Editor
@@ -16,47 +16,69 @@ namespace Mirage.Editor
             if (@object is not NetworkIdentity identity)
                 return;
 
-            AddCustomControl(new HSeparator());
+            var behaviours = new List<(Node, string name)>();
+            var allNodes = NodeHelper.FindNetworkBehavioursInternal<Node>(identity.Root ?? identity, byte.MaxValue);
+            foreach (var node in allNodes)
+            {
+                if (NetworkBehaviourInspector.IsNetworkBehaviour(node, out var typeName))
+                {
+                    behaviours.Add((node, typeName));
+                }
+            }
 
-            var behaviours = NodeHelper.FindNetworkBehaviours(identity.Root ?? identity, byte.MaxValue);
+            {
+                var separator = new HSeparator();
+                var sb = new StyleBoxLine();
+                sb.Color = new Color(.3f, .3f, .3f);
+                sb.Thickness = 4;
+                separator.AddThemeConstantOverride("separation", 30);
+                separator.AddThemeStyleboxOverride("separator", sb);
+                AddCustomControl(separator);
+            }
 
-            var label = new Label { Text = "Network Behaviours" };
+            var header = new Label { Text = "Network Inspector", HorizontalAlignment = HorizontalAlignment.Center, };
+            AddCustomControl(header);
+
+
+            var label = new Label { Text = "Network Behaviours:" };
             AddCustomControl(label);
 
-            if (behaviours != null && behaviours.Any())
+            if (behaviours != null && behaviours.Count > 0)
             {
-                var grid = new GridContainer
-                {
-                    Columns = 2
-                };
+                var grid = new GridContainer() { Columns = 1 };
                 AddCustomControl(grid);
 
-                foreach (var behaviour in behaviours)
+                foreach (var (node, typeName) in behaviours)
                 {
-                    if (behaviour is Node behaviourNode)
+                    var button = new Button
                     {
-                        var nameLabel = new Label { Text = behaviourNode.Name };
-                        grid.AddChild(nameLabel);
-
-                        var button = new Button
-                        {
-                            Text = $"({behaviour.GetType().Name})",
-                            TooltipText = behaviourNode.GetPath(),
-                            FocusMode = Control.FocusModeEnum.None,
-                            Flat = true,
-                        };
-                        button.Pressed += () =>
-                        {
-                            EditorInterface.Singleton.InspectObject(behaviourNode);
-                        };
-                        grid.AddChild(button);
-                    }
+                        Alignment = HorizontalAlignment.Left,
+                        Text = $"- {node.Name} ({typeName})",
+                        TooltipText = node.GetPath(),
+                        FocusMode = Control.FocusModeEnum.None,
+                        Flat = true,
+                    };
+                    button.Pressed += () =>
+                    {
+                        EditorInterface.Singleton.InspectObject(node);
+                    };
+                    grid.AddChild(button);
                 }
             }
             else
             {
                 var noBehavioursLabel = new Label { Text = "No Network Behaviours found." };
                 AddCustomControl(noBehavioursLabel);
+            }
+
+            {
+                var separator = new HSeparator();
+                var sb = new StyleBoxLine();
+                sb.Color = new Color(.3f, .3f, .3f);
+                sb.Thickness = 4;
+                separator.AddThemeConstantOverride("separation", 30);
+                separator.AddThemeStyleboxOverride("separator", sb);
+                AddCustomControl(separator);
             }
         }
     }

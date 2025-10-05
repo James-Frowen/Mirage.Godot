@@ -189,14 +189,29 @@ namespace Mirage
         /// <param name="components"></param>
         public static INetworkNode[] FindNetworkBehaviours(Node searchRoot, int maxAllowed)
         {
-            var found = GetAllChild<INetworkNode>(searchRoot);
+            var found = FindNetworkBehavioursInternal<INetworkNode>(searchRoot, maxAllowed);
+            return found.ToArray();
+        }
+
+        /// <summary>
+        /// Finds all NetworkBehaviours in child nodes, and then removes any that belong to another NetworkIdentity from the components array
+        /// <para>
+        ///     If there are nested NetworkIdentities then Behaviour that belong to those Identities will be found by GetComponentsInChildren if the child object is added
+        ///     before the Array is intialized. This method will check each Behaviour to make sure that the Identity is the same as the current Identity, and if it is not
+        ///     remove it from the array.
+        /// </para>
+        /// </summary>
+        /// <param name="components"></param>
+        public static List<T> FindNetworkBehavioursInternal<T>(Node searchRoot, int maxAllowed) where T : class
+        {
+            var found = GetAllChild<T>(searchRoot);
 
             // start at last so we can remove from end of array instead of start
             for (var i = found.Count - 1; i >= 0; i--)
             {
                 var item = found[i];
                 // get the identity that the node will be using itself
-                var identity = GetNetworkIdentityInternal((Node)item, false);
+                var identity = GetNetworkIdentityInternal((Node)(object)item, false);
                 if (identity == null)
                 {
                     logger.LogError($"Child node {item} found not find its NetworkIdentity");
@@ -218,7 +233,7 @@ namespace Mirage
                 logger.Log($"Found {found.Count} children: {string.Join("\n", list)}");
             }
 
-            return found.ToArray();
+            return found;
         }
     }
 }

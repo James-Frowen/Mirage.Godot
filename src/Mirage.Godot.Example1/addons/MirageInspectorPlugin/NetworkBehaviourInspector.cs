@@ -7,54 +7,29 @@ namespace Mirage.Editor
     {
         public override bool _CanHandle(GodotObject @object)
         {
-            if (@object is NetworkBehaviour)
+            if (@object is NetworkIdentity)
+                return false;
+            if (@object is not Node)
+                return false;
+
+            return IsNetworkBehaviour(@object, out _);
+        }
+
+        public static bool IsNetworkBehaviour(GodotObject @object, out string typeName)
+        {
+            if (@object?.GetScript().As<Script>() is CSharpScript script)
             {
-                return true;
+                var i = script.New().AsGodotObject();
+                var type = i.GetType();
+                if (type.IsSubclassOf(typeof(NetworkBehaviour)))
+                {
+
+                    typeName = type.Name;
+                    return true;
+                }
             }
-            else if (@object is Node node)
-            {
-                //GD.Print($"NB {@object is NetworkBehaviour} {@object.GetType()}");
 
-                //var objectType = @object.GetType();
-                //var scriptVariant = @object.GetScript();
-                //var script = scriptVariant.As<Script>();
-                //var isCsScript = false;
-                //string scriptClassName = null;
-                //System.Type scriptType = null;
-                //var isSubNB = false;
-                //if (script is CSharpScript cSharpScript)
-                //{
-                //    isCsScript = true;
-                //    // This is the important part: use reflection to check the class type
-                //    scriptClassName = cSharpScript.GetClass();
-                //    scriptType = System.Type.GetType(scriptClassName);
-
-                //    isSubNB = scriptType != null && scriptType.IsSubclassOf(typeof(NetworkBehaviour));
-                //}
-
-                //NetworkBehaviour nb = null;
-                //try
-                //{
-                //    nb = scriptVariant.As<NetworkBehaviour>();
-                //}
-                //catch { }
-
-                //GD.Print("--- NetworkBehaviourInspector._CanHandle ---");
-                //GD.Print($"Object: {@object}");
-                //GD.Print($"Object C# Type: {objectType.FullName}");
-                //GD.Print($"Script Path: {script?.ResourcePath}");
-                //GD.Print($"Result of 'scriptVariant.As<NetworkBehaviour>()': {nb}");
-                //GD.Print($"Result of 'isCsScript': {isCsScript}");
-                //GD.Print($"Result of 'scriptClassName': {scriptClassName}");
-                //GD.Print($"Result of 'scriptType': {scriptType}");
-                //GD.Print($"Result of 'isSubNB': {isSubNB}");
-                //GD.Print($"Result of 'IsClass(NetworkBehaviour)': {@object.IsClass("NetworkBehaviour")}");
-
-
-                //GD.Print("-----------------------------------------");
-                //node.PrintTree();
-                // TODO find class and see if it is child of NetworkBehaviour
-            }
+            typeName = "ERROR";
             return false;
         }
 
@@ -64,10 +39,22 @@ namespace Mirage.Editor
                 return;
             GD.Print($"GD Running NetworkBehaviourInspector");
 
-            // Add a separator to make it look nice
-            AddCustomControl(new HSeparator());
-
             var identity = NodeHelper.GetNetworkIdentity(node, false);
+
+
+
+            {
+                var separator = new HSeparator();
+                var sb = new StyleBoxLine();
+                sb.Color = new Color(.3f, .3f, .3f);
+                sb.Thickness = 4;
+                separator.AddThemeConstantOverride("separation", 30);
+                separator.AddThemeStyleboxOverride("separator", sb);
+                AddCustomControl(separator);
+            }
+
+            var header = new Label { Text = "Network Inspector", HorizontalAlignment = HorizontalAlignment.Center, };
+            AddCustomControl(header);
 
             var grid = new GridContainer();
             grid.Columns = 2;
@@ -101,6 +88,16 @@ namespace Mirage.Editor
                     errorLabel.AddThemeColorOverride("font_color", theme.GetColor("error_color", "Editor"));
                 }
                 grid.AddChild(errorLabel);
+            }
+
+            {
+                var separator = new HSeparator();
+                var sb = new StyleBoxLine();
+                sb.Color = new Color(.3f, .3f, .3f);
+                sb.Thickness = 4;
+                separator.AddThemeConstantOverride("separation", 30);
+                separator.AddThemeStyleboxOverride("separator", sb);
+                AddCustomControl(separator);
             }
         }
     }
