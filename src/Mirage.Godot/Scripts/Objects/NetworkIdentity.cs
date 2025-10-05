@@ -289,9 +289,7 @@ namespace Mirage
         {
             get
             {
-                // we write component index as byte
-                // check if components are in byte.MaxRange just to be 100% sure that we avoid overflows
-                _networkBehavioursCache ??= NodeHelper.FindNetworkBehaviours(Root ?? this, byte.MaxValue);
+                _networkBehavioursCache ??= NodeHelper.FindNetworkBehaviours(this);
                 return _networkBehavioursCache;
             }
         }

@@ -155,9 +155,24 @@ namespace Mirage
 
         private static NetworkIdentity GetNetworkIdentityInternal(Node node)
         {
-            return GetParent<NetworkIdentity>(node, includeSiblings: true);
+            var identity = GetParent<NetworkIdentity>(node, includeSiblings: true);
+            if (logger.LogEnabled())
+            {
+                if (identity != null)
+                    logger.Log($"Found {identity}");
+                else
+                    logger.Log($"Failed to find NetworkIdentity");
+            }
+            return identity;
         }
 
+
+        public static INetworkNode[] FindNetworkBehaviours(NetworkIdentity identity)
+        {
+            // we write component index as byte
+            // check if components are in byte.MaxRange just to be 100% sure that we avoid overflows
+            return FindNetworkBehaviours(identity, byte.MaxValue);
+        }
 
         /// <summary>
         /// Finds all NetworkBehaviours in child nodes, and then removes any that belong to another NetworkIdentity from the components array
@@ -168,7 +183,7 @@ namespace Mirage
         /// </para>
         /// </summary>
         /// <param name="components"></param>
-        internal static INetworkNode[] FindNetworkBehaviours(Node searchRoot, int maxAllowed)
+        public static INetworkNode[] FindNetworkBehaviours(Node searchRoot, int maxAllowed)
         {
             var found = GetAllChild<INetworkNode>(searchRoot);
 
@@ -192,6 +207,13 @@ namespace Mirage
 
             if (found.Count > maxAllowed)
                 throw new InvalidOperationException("Only 255 NetworkBehaviours are allowed per GameObject.");
+
+            if (logger.LogEnabled())
+            {
+                var list = found.Select(x => $"- {x}");
+                logger.Log($"Found {found.Count} children: {string.Join("\n", list)}");
+            }
+
             return found.ToArray();
         }
     }
