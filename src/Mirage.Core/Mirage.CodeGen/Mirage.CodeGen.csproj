@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Mirage.Godot\Mirage.Godot.csproj" />
+    <ProjectReference Include="..\..\Mirage.Godot\Mirage.Godot.csproj" Properties="MirageBuildingCodeGen=true" />
     <!-- <ProjectReference Include="..\..\Mirage.Godot.Example1\Mirage.Godot.Example1.csproj" /> -->
   </ItemGroup>
 </Project>
