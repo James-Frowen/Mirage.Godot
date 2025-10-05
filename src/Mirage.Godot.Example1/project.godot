@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 project/assembly_name="Mirage.Godot.Example1"
 project/solution_directory="../../"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/MirageInspectorPlugin/plugin.cfg")
+
 [input]
 
 move_left={
