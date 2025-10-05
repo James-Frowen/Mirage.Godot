@@ -8,7 +8,7 @@ namespace Mirage
 {
     public static class NodeHelper
     {
-        private static readonly ILogger logger = LogFactory.GetLogger("Mirage.NodeHelper");
+        private static readonly ILogger logger = LogFactory.GetLogger(typeof(NodeHelper));
 
         public static T GetSibling<T>(Node node) where T : class
         {
