@@ -236,6 +236,12 @@ namespace Mirage
         /// The ClientObjectManager is present only for client instances.
         /// </summary>
         public ClientObjectManager ClientObjectManager { get; private set; }
+
+        /// <summary>
+        /// Explicit parent override for this object. Used by <see cref="SpawnParentingMode.Manual"/>.
+        /// </summary>
+        public NetworkIdentity Parent;
+
         private NetworkPlayer _owner;
 
         /// <summary>
@@ -799,6 +805,24 @@ namespace Mirage
         internal void SetClientValues(ClientObjectManager clientObjectManager, SpawnMessage msg)
         {
             var spawnValues = msg.SpawnValues;
+
+            if (spawnValues.ParentNetId.HasValue)
+            {
+                if (clientObjectManager.Client.World.TryGetIdentity(spawnValues.ParentNetId.Value, out var parentIdentity))
+                {
+                    var parentNode = parentIdentity.Root;
+                    var childNode = Root;
+
+                    if (childNode.GetParent() != parentNode)
+                    {
+                        if (childNode.GetParent() != null)
+                            childNode.GetParent().RemoveChild(childNode);
+
+                        parentNode.AddChild(childNode);
+                    }
+                }
+            }
+
             if (Root is Node3D clone3d)
             {
                 if (spawnValues.Position.HasValue)
@@ -1039,6 +1063,7 @@ namespace Mirage
             ClientObjectManager = null;
             _owner = null;
             _networkBehavioursCache = null;
+            Parent = null;
 
             ClearObservers();
             ResetEvents();

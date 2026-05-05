@@ -446,6 +446,28 @@ namespace Mirage
                 }
             }
 
+            if (settings.SendParent != SpawnParentingMode.None)
+            {
+                var parentIdentity = identity.Parent;
+                if (parentIdentity == null && settings.SendParent == SpawnParentingMode.Auto)
+                {
+                    var parentNode = root.GetParent();
+                    while (parentNode != null)
+                    {
+                        parentIdentity = parentNode as NetworkIdentity ??
+                                         parentNode.GetChildren().OfType<NetworkIdentity>().FirstOrDefault();
+
+                        if (parentIdentity != null)
+                            break;
+
+                        parentNode = parentNode.GetParent();
+                    }
+                }
+
+                if (parentIdentity != null && parentIdentity.NetId != 0)
+                    values.ParentNetId = parentIdentity.NetId;
+            }
+
             return values;
         }
 
